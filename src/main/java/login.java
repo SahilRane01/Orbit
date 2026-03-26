@@ -25,6 +25,21 @@ public class login extends HttpServlet {
                     "root",
                     "Shriyash@11"
             );
+            String query = "CREATE TABLE IF NOT EXISTS users (\r\n"
+					+ "    id INT AUTO_INCREMENT PRIMARY KEY,\r\n"
+					+ "    full_name VARCHAR(100) NOT NULL,\r\n"
+					+ "    username VARCHAR(50) NOT NULL UNIQUE,\r\n"
+					+ "    email VARCHAR(100) NOT NULL UNIQUE,\r\n"
+					+ "    phone VARCHAR(15),\r\n"
+					+ "    role VARCHAR(20),\r\n"
+					+ "    course VARCHAR(100),\r\n"
+					+ "    batch VARCHAR(50),\r\n"
+					+ "    specialization VARCHAR(100),\r\n"
+					+ "    password VARCHAR(255) NOT NULL,\r\n"
+					+ "    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\r\n"
+					+ ");";
+			Statement user = conn.createStatement();
+			user.executeUpdate(query);
 
             String sql = "SELECT password FROM users WHERE username = ?";
             PreparedStatement psmt = conn.prepareStatement(sql);
