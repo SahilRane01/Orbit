@@ -5,24 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gurukul LMS</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- 🔥 CURSOR STYLE -->
-  <style>
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
-    }
-
-    #cursor {
-      animation: blink 1.2s infinite;
-      margin-left: 4px;
-    }
-  </style>
 </head>
 
 <body class="font-[Inter] bg-[#f5f5f5] text-black relative">
@@ -72,9 +57,9 @@
           ✱ EDUCATION + COLLABORATION
         </p>
 
-        <!-- 🔥 ANIMATED HERO TEXT -->
+        <!-- 🔥 LOOP TEXT -->
         <h1 class="font-[Orbitron] text-6xl md:text-8xl tracking-widest">
-          <span id="heroText"></span><span id="cursor">|</span>
+          <span id="heroText"></span><span class="animate-pulse">|</span>
         </h1>
 
       </div>
@@ -204,7 +189,7 @@
 
       if (index === text.length) {
         isDeleting = true;
-        setTimeout(typeLoop, 1200); // pause at full word
+        setTimeout(typeLoop, 1000);
         return;
       }
 
@@ -212,11 +197,7 @@
         isDeleting = false;
       }
 
-      // 🔥 smoother slower typing
-      let speed = isDeleting 
-        ? Math.random() * 60 + 80
-        : Math.random() * 100 + 150;
-
+      let speed = isDeleting ? 70 : 120;
       setTimeout(typeLoop, speed);
     }
 
