@@ -52,7 +52,7 @@
         <!-- LOGIN FORM -->
         <div id="loginForm" class="p-6">
 
-          <form action="LoginServlet" method="post">
+          <form action="login" method="post">
 
             <div class="mb-4">
               <label class="text-xs text-gray-500">USERNAME</label>
@@ -78,7 +78,7 @@
         <!-- REGISTER FORM -->
         <div id="registerForm" class="p-6 hidden">
 
-          <form action="RegisterServlet" method="post">
+          <form action="registration" method="post">
 
             <div class="mb-3">
               <label class="text-xs text-gray-500">FULL NAME</label>
@@ -134,6 +134,12 @@
             <div class="mb-4">
               <label class="text-xs text-gray-500">PASSWORD</label>
               <input type="password" name="password"
+                class="w-full border border-gray-300 p-2">
+            </div>
+            
+            <div class="mb-5">
+              <label class="text-xs text-gray-500">CONFIRM PASSWORD</label>
+              <input type="password" name="cpassword"
                 class="w-full border border-gray-300 p-2">
             </div>
 
