@@ -27,7 +27,7 @@ public class login extends HttpServlet {
             conn = DriverManager.getConnection(
                     "jdbc:mysql://192.168.0.105:3306/gurukul",
                     "root",
-                    "Shriyash@11"
+                    "Admin"
             );
 
             String sql = "SELECT * FROM users WHERE username = ?";

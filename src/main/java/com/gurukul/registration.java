@@ -28,7 +28,7 @@ public class registration extends HttpServlet {
 				conn = DriverManager.getConnection(
 						"jdbc:mysql://192.168.0.105:3306/gurukul",
 						"root",
-						"Shriyash@11"
+						"Admin"
 						);
 				String query = "CREATE TABLE IF NOT EXISTS users (\r\n"
 						+ "    id INT AUTO_INCREMENT PRIMARY KEY,\r\n"
