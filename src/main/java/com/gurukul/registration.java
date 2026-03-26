@@ -26,7 +26,7 @@ public class registration extends HttpServlet {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				conn = DriverManager.getConnection(
-						"jdbc:mysql://localhost:3306/gurukul",
+						"jdbc:mysql://192.168.0.105:3306/gurukul",
 						"root",
 						"Shriyash@11"
 						);

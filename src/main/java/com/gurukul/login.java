@@ -1,5 +1,4 @@
 package com.gurukul;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -26,7 +25,7 @@ public class login extends HttpServlet {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/gurukul",
+                    "jdbc:mysql://192.168.0.105:3306/gurukul",
                     "root",
                     "Shriyash@11"
             );
