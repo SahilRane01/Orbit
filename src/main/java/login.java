@@ -19,7 +19,7 @@ public class login extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Connection conn = null;
 		PreparedStatement  psmt = null;
-		PrintWriter p = null;
+		PrintWriter p = response.getWriter() ;
 		
 		String username,password,actual_pwd;
 		try {
@@ -27,14 +27,22 @@ public class login extends HttpServlet {
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://localhost:3306/gurukul",
 					"root",
-					"Shriysh@11"
+					"Shriyash@11"
 					);
-			p = response.getWriter();
+		
 		}catch(Exception e) {
 			response.setContentType("text/html");
 			p.println("Error: ");
 			p.println(e);
 		}
+		try {
+			
+		}catch(Exception e1){
+			response.setContentType("text/html");
+			p.println("Error: ");
+			p.println(e1);
+		}
+		
 		
 		
 	}

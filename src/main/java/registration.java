@@ -16,7 +16,8 @@ public class registration extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 		Connection conn = null;
 		PreparedStatement  psmt = null;
-		PrintWriter p = null;
+		try{
+		PrintWriter p = response.getWriter() ;
 		
 		
 		String fullname,username,email,role,course,batch,specialization,password,c_password;
@@ -26,9 +27,9 @@ public class registration extends HttpServlet {
 				conn = DriverManager.getConnection(
 						"jdbc:mysql://localhost:3306/gurukul",
 						"root",
-						"Shriysh@11"
+						"Shriyash@11"
 						);
-				p = response.getWriter();
+				
 				
 			}catch(Exception e) {
 				System.out.print("Error"+e);
@@ -74,7 +75,9 @@ public class registration extends HttpServlet {
 				p.println("Error: ");
 				p.println(e1);
 			}
+		}catch(Exception E) {
 			
+		}
 			
 
 			

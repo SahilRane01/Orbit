@@ -72,7 +72,7 @@
     <!-- REGISTER FORM -->
     <div id="registerForm" class="p-6 hidden">
 
-      <form action="RegisterServlet" method="post">
+      <form action="registration" method="post">
 
         <div class="mb-4">
           <label class="text-xs text-gray-500">USERNAME</label>
