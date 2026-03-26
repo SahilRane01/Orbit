@@ -1,55 +1,60 @@
-
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-
+import jakarta.servlet.http.*;
+import java.io.*;
+import java.sql.*;
 
 @WebServlet("/login")
 public class login extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Connection conn = null;
-		PreparedStatement  psmt = null;
-		PrintWriter p = response.getWriter() ;
-		
-		String username,password,actual_pwd;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/gurukul",
-					"root",
-					"Shriyash@11"
-					);
-		
-		}catch(Exception e) {
-			response.setContentType("text/html");
-			p.println("Error: ");
-			p.println(e);
-		}
-		try {
-			
-		}catch(Exception e1){
-			response.setContentType("text/html");
-			p.println("Error: ");
-			p.println(e1);
-		}
-		
-		
-		
-	}
+    private static final long serialVersionUID = 1L;
 
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
+        response.setContentType("text/html");
+        PrintWriter p = response.getWriter();
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/gurukul",
+                    "root",
+                    "Shriyash@11"
+            );
+
+            String sql = "SELECT password FROM users WHERE username = ?";
+            PreparedStatement psmt = conn.prepareStatement(sql);
+            psmt.setString(1, username);
+
+            ResultSet rs = psmt.executeQuery();
+
+            if (rs.next()) {
+                String actual_pwd = rs.getString("password");
+
+                if (password.equals(actual_pwd)) {
+
+                    HttpSession session = request.getSession();
+                    session.setAttribute("username", username);
+
+                    response.sendRedirect("dashboard.jsp");
+
+                } else {
+                    p.println("Invalid Password");
+                }
+
+            } else {
+                p.println("User not found");
+            }
+
+            conn.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            p.println("Error: " + e);
+        }
+    }
 }
