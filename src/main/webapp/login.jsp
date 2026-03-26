@@ -45,7 +45,34 @@
       </button>
     </div>
 
-    <!-- FORMS WILL GO HERE -->
+    <!-- LOGIN FORM -->
+<div id="loginForm" class="p-6">
+
+  <form action="LoginServlet" method="post">
+
+    <!-- Username -->
+    <div class="mb-4">
+      <label class="text-xs text-gray-500">USERNAME</label>
+      <input type="text" name="username"
+        class="w-full border border-gray-300 p-2 focus:outline-none focus:border-black">
+    </div>
+
+    <!-- Password -->
+    <div class="mb-4">
+      <label class="text-xs text-gray-500">PASSWORD</label>
+      <input type="password" name="password"
+        class="w-full border border-gray-300 p-2 focus:outline-none focus:border-black">
+    </div>
+
+    <!-- Button -->
+    <button type="submit"
+      class="w-full bg-red-500 text-white py-2 hover:bg-red-600 transition">
+      LOGIN
+    </button>
+
+  </form>
+
+</div>
 
   </div>
 
