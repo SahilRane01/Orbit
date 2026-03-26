@@ -46,7 +46,7 @@
     <!-- LOGIN FORM -->
     <div id="loginForm" class="p-6">
 
-      <form action="LoginServlet" method="post">
+      <form action="login" method="post">
 
         <div class="mb-4">
           <label class="text-xs text-gray-500">USERNAME</label>
