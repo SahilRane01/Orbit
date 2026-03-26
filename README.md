@@ -102,3 +102,9 @@ User -> Browser -> Servlet -> Business Logic -> Database -> JSP -> Response
 
 The Gurukul Web Application provides a scalable and efficient platform for managing academic activities. Using Servlets, JSP, and modern frontend tools, it ensures better communication, improved learning experience, and effective administration.
 
+### Scaling Suggestion (Optional)
+
+This stack is perfect for college projects, but if later you want to scale/start a startup:
+
+- Upgrade backend -> Spring Boot
+- Frontend -> React
