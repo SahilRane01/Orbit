@@ -1,8 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    <%
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login.html");
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
   <title>Home - Gurukul</title>
 
@@ -33,7 +39,7 @@
     </h1>
 
     <div class="text-sm">
-      Welcome, <b><%= session.getAttribute("user") %></b>
+      Welcome, <b>${user.userName}</b>
     </div>
 
   </nav>
@@ -92,4 +98,4 @@
 </div>
 
 </body>
-</html>>
+</html>

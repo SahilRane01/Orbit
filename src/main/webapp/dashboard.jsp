@@ -1,3 +1,8 @@
+<%
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login.html");
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +21,7 @@
     <h1 class="font-[Orbitron] tracking-widest text-lg">GURUKUL</h1>
 
     <div class="text-sm">
-      Welcome, <b>Student</b>
+      Welcome, <b>${user.userName}</b>
     </div>
   </nav>
 
