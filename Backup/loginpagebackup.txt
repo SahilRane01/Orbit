@@ -14,9 +14,6 @@
 
 <body class="font-[Inter] bg-[#f5f5f5] text-black relative">
 
-  <!-- 🔥 PARTICLE CANVAS (ADDED ONLY THIS) -->
-  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
-
   <!-- GRID BACKGROUND -->
   <div class="absolute inset-0 pointer-events-none"
     style="
@@ -110,7 +107,6 @@
 
         <div id="registerForm" class="p-8 hidden">
           <form action="registration" method="post" class="space-y-4">
-
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Full Name</label>
@@ -172,7 +168,6 @@
               class="w-full bg-black text-white py-4 font-[Orbitron] tracking-[0.2em] text-sm hover:bg-gray-900 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
               INITIALIZE ACCOUNT
             </button>
-
           </form>
         </div>
 
@@ -207,92 +202,15 @@
     }
   </script>
 
-  <!-- 🔥 PARTICLE SYSTEM -->
-  <script>
-    const canvas = document.getElementById("particleCanvas");
-    const ctx = canvas.getContext("2d");
+    </div> <!-- End flex-grow centered area -->
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+    <!-- FOOTER -->
+    <footer class="p-6 border-t border-gray-300 text-sm text-gray-600 flex justify-between">
+      <span>© 2026 Gurukul ILE</span>
+      <span>ShriyashP | SahilR | SandeshP</span>
+    </footer>
 
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    let mouse = { x: null, y: null };
-
-    window.addEventListener("mousemove", (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    class Particle {
-      constructor(x, y) {
-        this.baseX = x;
-        this.baseY = y;
-        this.x = x;
-        this.y = y;
-        this.vx = 0;
-        this.vy = 0;
-      }
-
-      update() {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 80) {
-          let force = (80 - dist) / 80;
-          let angle = Math.atan2(dy, dx);
-          this.vx += Math.cos(angle) * force * 2;
-          this.vy += Math.sin(angle) * force * 2;
-        }
-
-        this.vx += (this.baseX - this.x) * 0.05;
-        this.vy += (this.baseY - this.y) * 0.05;
-
-        this.vx *= 0.85;
-        this.vy *= 0.85;
-
-        this.x += this.vx;
-        this.y += this.vy;
-      }
-
-      draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.25)";
-        ctx.fillRect(this.x, this.y, 2, 2);
-      }
-    }
-
-    let particles = [];
-
-    function initParticles() {
-      particles = [];
-      let gap = 40;
-
-      for (let x = 0; x < canvas.width; x += gap) {
-        for (let y = 0; y < canvas.height; y += gap) {
-          particles.push(new Particle(x, y));
-        }
-      }
-    }
-
-    initParticles();
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-
-      requestAnimationFrame(animateParticles);
-    }
-
-    animateParticles();
-  </script>
+  </div> <!-- End relative z-10 outer div -->
 
 </body>
 </html>
