@@ -93,7 +93,7 @@
 
             <div>
               <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Secure Password</label>
-              <input type="password" name="password" placeholder="â¢â¢â¢â¢â¢â¢â¢â¢"
+              <input type="password" name="password" placeholder="ENTER YOUR SECURE PASSWORD"
                 class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
             </div>
 
