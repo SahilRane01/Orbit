@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
     <%
     if (session.getAttribute("user") == null) {
-        response.sendRedirect("login.html");
+        response.sendRedirect("login.jsp");
     }
 %>
 <!DOCTYPE html>

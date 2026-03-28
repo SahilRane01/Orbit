@@ -1,7 +1,20 @@
+<<<<<<< Updated upstream
 <%@ page import="java.sql.*, java.util.*, com.gurukul.*, java.text.SimpleDateFormat, jakarta.servlet.ServletContext" %>
   <% if (session.getAttribute("user")==null) { response.sendRedirect("login.jsp"); return; } List<noticeBoard> notices =
     new ArrayList<>();
       List<eventBean> events = new ArrayList<>();
+=======
+<%
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login.jsp");
+    }
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Gurukul</title>
+>>>>>>> Stashed changes
 
           try {
           ServletContext context = getServletContext();
