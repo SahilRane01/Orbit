@@ -1,3 +1,4 @@
+<% if (session.getAttribute("user") != null) { response.sendRedirect("dashboard.jsp"); return; } %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +46,7 @@
         <span>2026</span>
       </div>
 
-      <a href="index.html" class="border border-black px-4 py-1 text-sm hover:bg-black hover:text-white transition uppercase">
+      <a href="index.jsp" class="border border-black px-4 py-1 text-sm hover:bg-black hover:text-white transition uppercase">
         Back to Home
       </a>
     </nav>

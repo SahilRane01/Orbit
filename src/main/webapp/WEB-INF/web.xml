@@ -2,7 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://jakarta.ee/xml/ns/jakartaee" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd" id="WebApp_ID" version="6.0">
   <display-name>GURUKUL-ILE</display-name>
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>index.htm</welcome-file>
     <welcome-file>index.xhtml</welcome-file>
@@ -11,4 +11,20 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.xhtml</welcome-file>
   </welcome-file-list>
+  
+  
+ <context-param>
+	<param-name>DB_URL</param-name>
+	<param-value>192.168.0.104</param-value>
+</context-param>
+
+<context-param>
+    <param-name>DB_USERNAME</param-name>
+    <param-value>root</param-value>
+</context-param>
+
+<context-param>
+    <param-name>DB_PWD</param-name>
+    <param-value>Admin</param-value>
+</context-param>
 </web-app>

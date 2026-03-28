@@ -1,4 +1,5 @@
 package com.gurukul;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -13,6 +14,11 @@ public class login extends HttpServlet {
 
         response.setContentType("text/html");
         PrintWriter p = response.getWriter();
+        ServletContext context = getServletContext();
+
+        String DB = context.getInitParameter("DB_URL");
+        String DB_User = context.getInitParameter("DB_USERNAME");
+        String DB_pwd = context.getInitParameter("DB_PWD");
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -25,9 +31,9 @@ public class login extends HttpServlet {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             conn = DriverManager.getConnection(
-                    "jdbc:mysql://192.168.0.105:3306/gurukul",
-                    "root",
-                    "Admin"
+                    "jdbc:mysql://"+DB+":3306/gurukul",
+                    DB_User,
+                    DB_pwd
             );
 
             String sql = "SELECT * FROM users WHERE username = ?";

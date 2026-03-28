@@ -1,3 +1,4 @@
+<% if (session.getAttribute("user") != null) { response.sendRedirect("dashboard.jsp"); return; } %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +43,7 @@
     <!-- MICRO HEADER -->
     <div class="border-b border-gray-300 px-6 py-2 flex justify-between text-xs text-gray-500">
       <span>INDEPENDENT LEARNING ENVIRONMENT</span>
-      <span>"THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO." — STEVE JOBS</span>
+      <span>"THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO." - STEVE JOBS</span>
       <span>GURUKUL</span>
     </div>
 
@@ -95,7 +96,7 @@
         <div class="bg-red-500 text-white p-6 flex items-center justify-center"
              style="clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);">
           <h2 class="text-lg tracking-wide">
-            LEARN • CONNECT • GROW
+            LEARN / CONNECT / GROW
           </h2>
         </div>
 
@@ -180,7 +181,7 @@
     <!-- FOOTER -->
     <footer class="p-6 border-t border-gray-300 text-sm text-gray-600 flex justify-between">
       <span>© 2026 Gurukul LMS</span>
-      <span>ShriyashP • SahilR • SandeshP</span>
+      <span>ShriyashP | SahilR | SandeshP</span>
     </footer>
 
   </div>

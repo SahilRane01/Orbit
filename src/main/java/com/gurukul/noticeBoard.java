@@ -7,6 +7,7 @@ public class noticeBoard {
 	private String heading;
 	private String body;
 	private Timestamp createdAt;
+	private String whom;
 
 	public noticeBoard() {
 	}
@@ -41,5 +42,13 @@ public class noticeBoard {
 
 	public void setCreatedAt(Timestamp createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public String getWhom() {
+		return whom;
+	}
+
+	public void setWhom(String whom) {
+		this.whom = whom;
 	}
 }

@@ -1,6 +1,7 @@
 package com.gurukul;
 
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 
 import jakarta.servlet.annotation.WebServlet;
@@ -19,17 +20,21 @@ public class registration extends HttpServlet {
 		PreparedStatement  psmt = null;
 		try{
 		PrintWriter p = response.getWriter() ;
-		
+		ServletContext context = getServletContext();
+
+		String DB = context.getInitParameter("DB_URL");
+        String DB_User = context.getInitParameter("DB_USERNAME");
+        String DB_pwd = context.getInitParameter("DB_PWD");
 		
 		String fullname,username,email,role,course,batch,specialization,password,c_password;
 		Long phone;
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				conn = DriverManager.getConnection(
-						"jdbc:mysql://192.168.0.105:3306/gurukul",
-						"root",
-						"Admin"
-						);
+	                    "jdbc:mysql://"+DB+":3306/gurukul",
+	                    DB_User,
+	                    DB_pwd
+	            );
 				String query = "CREATE TABLE IF NOT EXISTS users (\r\n"
 						+ "    id INT AUTO_INCREMENT PRIMARY KEY,\r\n"
 						+ "    full_name VARCHAR(100) NOT NULL,\r\n"
