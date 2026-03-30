@@ -15,7 +15,7 @@
   
  <context-param>
 	<param-name>DB_URL</param-name>
-	<param-value>192.168.0.104</param-value>
+	<param-value>192.168.0.105</param-value>
 </context-param>
 
 <context-param>

@@ -79,7 +79,7 @@
             <!-- Lucide Icons -->
             <script src="https://unpkg.com/lucide@latest"></script>
 
-            <style>
+            <style type="text/tailwindcss">
               .grid-bg {
                 background-image:
                   linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
@@ -108,6 +108,12 @@
 
               #cursor { animation: blink 1.2s infinite; margin-left: 4px; }
               .animate-entry { animation: entry 0.6s ease-out forwards; }
+              
+              /* PRECISION HUD SIDEBAR ACCENTS */
+              .hud-corner { @apply absolute w-5 h-5 border-red-500 shadow-[0_0_15px_rgba(255,51,51,0.4)] z-20; }
+              .terminal-index { @apply text-[7px] text-gray-300 font-bold tracking-widest mr-2 group-hover:text-red-500 transition-colors opacity-50; }
+              .connector-line { @apply absolute top-24 bottom-24 w-[1px] bg-black/[0.04] z-0 transition-all duration-500; }
+              .active-bar { @apply absolute left-0 top-0 bottom-0 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,51,51,0.4)]; }
             </style>
           </head>
 
@@ -118,9 +124,9 @@
             <div class="fixed inset-0 pointer-events-none bg-gradient-to-tr from-red-500/[0.02] via-transparent to-transparent z-0"></div>
 
             <!-- SYSTEM TOP BAR -->
-            <div class="relative z-20 border-b border-black/5 px-6 py-2 flex justify-between text-[9px] text-gray-400 bg-white/80 backdrop-blur-md uppercase tracking-[0.3em] font-bold">
+            <div class="relative z-50 border-b border-black/5 px-4 md:px-6 py-2 flex justify-between items-center text-[9px] text-gray-400 bg-white/80 backdrop-blur-md uppercase tracking-[0.3em] font-bold">
               <div class="flex items-center gap-4">
-                <span class="text-red-500 animate-pulse">●</span>
+                <span class="text-red-500 animate-pulse">â�</span>
                 <span>GURUKUL_ILE / ONLINE</span>
               </div>
               <span class="hidden md:inline opacity-60">"Innovation distinguishes between a leader and a follower."</span>
@@ -132,40 +138,99 @@
 
             <div class="flex flex-grow overflow-hidden relative z-10">
 
-              <!-- SIDEBAR: COMMAND MODULE -->
-              <aside class="w-20 md:w-24 border-r border-black/5 bg-white flex flex-col items-center py-8 gap-10">
-                <!-- LOGO -->
-                <div class="font-[Orbitron] text-[10px] tracking-widest text-center leading-none text-red-500 font-bold">
-                  GKL
-                </div>
+              <!-- SIDEBAR: PRECISION COMMAND HUD (MOBILE RESPONSIVE) -->
+              <aside id="sidebar-module" class="fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 flex flex-col h-full py-4 md:py-6 pr-0 md:pr-4 transition-all duration-500 group/sidebar w-64 md:w-20 hover:md:w-64 bg-white/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none">
+                <!-- CIRCUITRY CONNECTOR LINE (DYNAMIC POSITION) -->
+                <div class="connector-line left-[39px] md:group-hover/sidebar:left-[47px] hidden md:block"></div>
 
-                <!-- NAV ICONS -->
-                <div class="flex flex-col gap-8 flex-grow">
-                  <a href="#" class="p-4 bg-red-500 text-white rounded-xl shadow-[0_8px_20px_rgba(255,51,51,0.2)] transition-all hover:scale-110">
-                    <i data-lucide="home" class="w-5 h-5"></i>
-                  </a>
-                  <a href="#" class="p-3 text-gray-400 hover:text-red-500 transition-all hover:scale-110">
-                    <i data-lucide="users" class="w-5 h-5"></i>
-                  </a>
-                  <a href="#" class="p-3 text-gray-400 hover:text-red-500 transition-all hover:scale-110">
-                    <i data-lucide="pen-tool" class="w-5 h-5"></i>
-                  </a>
-                  <a href="#" class="p-3 text-gray-400 hover:text-red-500 transition-all hover:scale-110">
-                    <i data-lucide="calendar" class="w-5 h-5"></i>
-                  </a>
-                  <a href="#" class="p-3 text-gray-400 hover:text-red-500 transition-all hover:scale-110">
-                    <i data-lucide="bell" class="w-5 h-5"></i>
-                  </a>
-                </div>
+                <div class="glass h-full border-r md:border border-black/10 flex flex-col py-8 md:py-10 overflow-hidden relative shadow-2xl bg-white/95">
+                  <button id="mobile-close" class="md:hidden absolute top-4 right-4 p-2 text-gray-400 hover:text-red-500 z-50">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                  </button>
 
-                <!-- PROFILE MODULE -->
-                <div class="mt-auto flex flex-col gap-6 items-center">
-                  <a href="logout" class="p-3 text-gray-400 hover:text-red-500 transition-colors">
-                    <i data-lucide="log-out" class="w-5 h-5"></i>
-                  </a>
-                  <div class="w-10 h-10 border border-black/5 p-1 flex items-center justify-center relative group cursor-pointer overflow-hidden bg-gray-50">
-                    <div class="absolute inset-0 bg-red-500/10 translate-y-full group-hover:translate-y-0 transition-transform"></div>
-                    <i data-lucide="user" class="text-gray-400 group-hover:text-red-500 relative z-10 transition-colors"></i>
+                  <!-- MECHANICAL HUD CORNERS (INTERNAL ANCHORS) -->
+                  <div class="hud-corner top-2 left-2 border-t-2 border-l-2"></div>
+                  <div class="hud-corner top-2 right-2 border-t-2 border-r-2 opacity-10"></div>
+                  <div class="hud-corner bottom-2 left-2 border-b-2 border-l-2 opacity-10"></div>
+                  <div class="hud-corner bottom-2 right-2 border-b-2 border-r-2 border-red-500"></div>
+
+                  <!-- LOGO SECTION: SENSOR FRAME -->
+                  <div class="w-full flex md:flex-col items-center md:items-start transition-all duration-500 px-6 md:px-0 md:group-hover/sidebar:px-8 relative z-10 md:justify-center">
+                    <div class="flex items-center justify-center w-full md:w-auto gap-4">
+                      <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20">
+                        GKL
+                      </div>
+                      <div class="block md:hidden md:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">
+                        <div class="font-[Orbitron] text-[11px] tracking-[0.2em] text-red-500 font-bold leading-none">GURUKUL_ILE</div>
+                        <div class="text-[7px] text-gray-400 tracking-[0.4em] font-bold mt-1 uppercase whitespace-nowrap">SENS_UNIT_V4</div>
+                      </div>
+                    </div>
+                    <div class="hidden md:block w-full h-[1px] bg-black/5 mt-6 opacity-0 group-hover/sidebar:opacity-100 transition-opacity"></div>
+                  </div>
+
+                  <!-- NAV HUD ITEMS: TECHNICAL ARRAY (SCROLLABLE) -->
+                  <nav class="flex-grow flex flex-col gap-1 mt-4 relative z-10 items-center md:items-stretch overflow-y-auto scrollbar-hide">
+                    <a href="#" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] relative transition-all w-full justify-center md:justify-start">
+                      <div class="active-bar"></div>
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="home" class="w-5 h-5 text-red-500 shadow-[0_0_15px_rgba(255,51,51,0.2)]"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[01]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-red-500">Dashboard</span>
+                    </a>
+
+                    <a href="#" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="users" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[02]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Students</span>
+                    </a>
+
+                    <a href="#" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="pen-tool" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[03]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Academic</span>
+                    </a>
+
+                    <a href="#" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="calendar" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[04]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Schedule</span>
+                    </a>
+
+                    <a href="#" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="bell" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[05]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Alerts</span>
+                    </a>
+                  </nav>
+
+                  <!-- AUTH HUD MODULE (SHRINK-0) -->
+                  <div class="flex-shrink-0 flex flex-col gap-2 relative z-10 items-center md:items-stretch mt-auto">
+                    <a href="logout" class="group/item flex items-center gap-4 p-4 hover:text-red-500 transition-all border-l border-transparent hover:bg-red-500/5 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[99]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-500 group-hover/item:text-red-500">Deauth</span>
+                    </a>
+                    
+                    <div class="p-2 border-y border-black/5 flex items-center gap-4 group/profile cursor-pointer relative overflow-hidden bg-gray-50/20 hover:bg-white transition-all w-full justify-center md:justify-start">
+                      <div class="w-10 h-10 bg-white flex items-center justify-center shrink-0 border border-black/5 relative z-10 rounded-sm">
+                        <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover/profile:text-red-500 transition-colors"></i>
+                      </div>
+                      <div class="block md:hidden md:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 relative z-10">
+                        <div class="text-[10px] font-bold text-gray-900 truncate w-32 uppercase tracking-[0.2em] font-[Orbitron]"><%= session.getAttribute("username") %></div>
+                        <div class="text-[7px] text-red-500 font-bold tracking-[0.4em] uppercase mt-1">CORE_AUTHORIZED</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </aside>
@@ -252,7 +317,7 @@
                               <div class="pr-12">
                                 <div
                                   class="flex items-center gap-3 mb-4 text-red-500 text-[9px] font-bold tracking-widest uppercase opacity-70">
-                                  <span>✱ BROADCAST_0<%= notices.indexOf(nb) + 1 %></span>
+                                  <span>&#x2731; BROADCAST_0<%= notices.indexOf(nb) + 1 %></span>
                                   <span class="w-8 h-[1px] bg-red-500"></span>
                                 </div>
                                 <h3 class="font-[Orbitron] font-bold text-4xl mb-6 uppercase tracking-tighter leading-tight text-gray-900 line-clamp-2 transition-all group-hover:text-red-500">
@@ -288,7 +353,7 @@
 
                   <!-- ACTIVITY LOG: EVENTS -->
                   <div class="col-span-12 lg:col-span-4 bg-[#0a0a0a] border border-black p-8 flex flex-col relative overflow-hidden group neon-glow transition-all duration-500">
-                    <div class="absolute top-4 right-4 text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">✱</div>
+                    <div class="absolute top-4 right-4 text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">&#x2731;</div>
 
                     <h2 class="font-[Orbitron] text-[10px] tracking-[0.5em] text-gray-500 uppercase mb-12">Activity Timeline</h2>
 
@@ -348,7 +413,7 @@
                         <span class="text-[7px] text-red-500 font-bold tracking-[0.4em] mb-1">MODULE_01 //</span>
                         <h2 class="font-[Orbitron] text-[10px] tracking-[0.4em] text-gray-400 uppercase">Pending_Submissions</h2>
                       </div>
-                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">✱</span>
+                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">�*</span>
                     </div>
                     <div class="flex-grow flex flex-col justify-center relative z-10">
                       <div class="text-7xl font-[Orbitron] tracking-tighter mb-4 text-gray-900 drop-shadow-sm group-hover:text-red-500 transition-colors">03</div>
@@ -364,7 +429,7 @@
                         <span class="text-[7px] text-red-500 font-bold tracking-[0.4em] mb-1">MODULE_02 // </span>
                         <h2 class="font-[Orbitron] text-[10px] tracking-[0.4em] text-gray-400 uppercase">Attendance_Record</h2>
                       </div>
-                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform">✱</span>
+                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform">&#x2731;</span>
                     </div>
                     <div class="flex-grow flex flex-col justify-center relative z-10">
                       <div class="text-7xl font-[Orbitron] tracking-tighter mb-8 flex items-baseline text-gray-900 group-hover:text-red-500 transition-colors">
@@ -383,7 +448,7 @@
                         <span class="text-[7px] text-red-500 font-bold tracking-[0.4em] mb-1">MODULE_03 // </span>
                         <h2 class="font-[Orbitron] text-[10px] tracking-[0.4em] text-gray-400 uppercase">Active_Curriculums</h2>
                       </div>
-                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">✱</span>
+                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">*</span>
                     </div>
                     <div class="flex-grow flex flex-col justify-center relative z-10">
                       <div class="space-y-6">
@@ -404,14 +469,14 @@
                 <footer class="mt-auto py-8 border-t border-black/5 flex justify-between items-center text-[8px] text-gray-400 uppercase tracking-[0.5em] font-bold">
                   <div class="flex gap-12 items-center">
                     <div class="flex gap-4 text-gray-500 hover:text-red-500 transition-colors cursor-pointer">
-                      <span>� 2026_GKL_CORE</span>
+                      <span>© 2026_GKL_CORE</span>
                       <span class="opacity-30 self-center h-1 w-1 bg-gray-400 rounded-full"></span>
                       <span>SECURE_LINKv2</span>
                     </div>
                   </div>
                   <div class="flex gap-10 items-center">
                     <div class="flex items-center gap-4 group cursor-help text-gray-500">
-                      <span class="text-red-500 group-hover:rotate-90 transition-transform duration-500">✱</span>
+                      <span class="text-red-500 group-hover:rotate-90 transition-transform duration-500">&#x2731;</span>
                       <span class="group-hover:text-gray-900 transition-colors uppercase">OS_STATUS: AUTHENTICATED</span>
                     </div>
                     <span class="hidden lg:inline opacity-30">|</span>
@@ -492,6 +557,14 @@
                   startAutoSlide();
                 }
               })();
+
+              // MOBILE SIDEBAR TOGGLE LOGIC
+              document.getElementById('mobile-toggle')?.addEventListener('click', () => {
+                document.getElementById('sidebar-module')?.classList.remove('-translate-x-full');
+              });
+              document.getElementById('mobile-close')?.addEventListener('click', () => {
+                document.getElementById('sidebar-module')?.classList.add('-translate-x-full');
+              });
             </script>
           </body>
 
