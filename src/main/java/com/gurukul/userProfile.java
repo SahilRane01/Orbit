@@ -1,42 +1,88 @@
 package com.gurukul;
-public class userProfile {
 
-    private int id;
-    private String fullName;
-    private String userName;
-    private String email;
-    private String phone;
-    private String role;
-    private String course;
-    private String batch;
-    private String specialization;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-    public userProfile() {}
+@WebServlet("/userProfile")
+public class userProfile extends HttpServlet {
+	private static final long serialVersionUID = 1L;
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		userProfileBean user = (userProfileBean) session.getAttribute("user");
 
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
+		if (user == null) {
+			response.sendRedirect("login.jsp");
+			return;
+		}
 
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
+		String name = request.getParameter("name");
+		String email = request.getParameter("email");
+		String phone = request.getParameter("ph");
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+		// Synchronize values with form inputs
+		if (name == null || name.trim().isEmpty()) name = user.getFullName();
+		if (email == null || email.trim().isEmpty()) email = user.getEmail();
+		if (phone == null || phone.trim().isEmpty()) phone = user.getPhone();
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+		ServletContext context = getServletContext();
+		String DB = context.getInitParameter("DB_URL");
+		String DB_User = context.getInitParameter("DB_USERNAME");
+		String DB_pwd = context.getInitParameter("DB_PWD");
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+		Connection conn = null;
+		PreparedStatement psmt = null;
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://" + DB + ":3306/gurukul",
+					DB_User,
+					DB_pwd
+			);
 
-    public String getCourse() { return course; }
-    public void setCourse(String course) { this.course = course; }
+			String sql = "UPDATE users SET full_name=?, email=?, phone=? WHERE id=?";
+			psmt = conn.prepareStatement(sql);
+			psmt.setString(1, name);
+			psmt.setString(2, email);
+			psmt.setString(3, phone);
+			psmt.setInt(4, user.getId());
 
-    public String getBatch() { return batch; }
-    public void setBatch(String batch) { this.batch = batch; }
+			int rows = psmt.executeUpdate();
 
-    public String getSpecialization() { return specialization; }
-    public void setSpecialization(String specialization) { this.specialization = specialization; }
+			if (rows > 0) {
+				user.setFullName(name);
+				user.setEmail(email);
+				user.setPhone(phone);
+				session.setAttribute("user", user);
+			}
+
+			response.sendRedirect("userProfile.jsp?status=success");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.sendRedirect("userProfile.jsp?status=error&msg=" + e.getMessage());
+		} finally {
+			try {
+				if (psmt != null) psmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.sendRedirect("userProfile.jsp");
+	}
 }

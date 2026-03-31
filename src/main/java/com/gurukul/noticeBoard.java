@@ -9,6 +9,8 @@ public class noticeBoard {
 	private Timestamp createdAt;
 	private String whom;
 
+	private String authorName;
+
 	public noticeBoard() {
 	}
 

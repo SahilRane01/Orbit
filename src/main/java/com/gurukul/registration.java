@@ -26,8 +26,7 @@ public class registration extends HttpServlet {
         String DB_User = context.getInitParameter("DB_USERNAME");
         String DB_pwd = context.getInitParameter("DB_PWD");
 		
-		String fullname,username,email,role,course,batch,specialization,password,c_password;
-		Long phone;
+		String fullname,username,email,role,course,batch,specialization,password,c_password,phone;
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				conn = DriverManager.getConnection(
@@ -67,7 +66,7 @@ public class registration extends HttpServlet {
 				specialization = request.getParameter("specialization");
 				password = request.getParameter("password");;
 				c_password = request.getParameter("cpassword");
-				phone = Long.parseLong(request.getParameter("phone"));
+				phone = request.getParameter("phone");
 				if (password.equals(c_password)) {
 					psmt = conn.prepareStatement(
 							"INSERT INTO users"
@@ -77,7 +76,7 @@ public class registration extends HttpServlet {
 					psmt.setString(1, fullname);
 					psmt.setString(2, username);
 					psmt.setString(3, email);
-					psmt.setLong(4, phone);
+					psmt.setString(4, phone);
 					psmt.setString(5, role);
 					psmt.setString(6, course);
 					psmt.setString(7, batch);
@@ -91,14 +90,19 @@ public class registration extends HttpServlet {
 				}
 				
 				
-			}catch(Exception e1) {
-				System.out.print("Error"+e1);
-				response.setContentType("text/html");
-				p.println("Error: ");
-				p.println(e1);
+			} catch (SQLException e1) {
+				p.println("<div style='color:red; font-family:sans-serif; padding:20px; border:1px solid red;'>");
+				p.println("<h3>Registration Database Error</h3><p>" + e1.getMessage() + "</p>");
+				p.println("</div>");
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				p.println("<div style='color:red; font-family:sans-serif; padding:20px; border:1px solid red;'>");
+				p.println("<h3>Registration System Error</h3><p>" + e1.toString() + "</p>");
+				p.println("</div>");
+				e1.printStackTrace();
 			}
-		}catch(Exception E) {
-			
+		} catch (Exception E) {
+			E.printStackTrace();
 		}
 			
 

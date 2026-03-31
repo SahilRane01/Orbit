@@ -89,15 +89,25 @@
 
         <div id="loginForm" class="p-8">
           <form action="login" method="post" class="space-y-6">
-            <div>
-              <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Username / ID</label>
-              <input type="text" name="username" placeholder="ENTER YOUR USERNAME"
-                class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Username / ID</label>
+                <input type="text" name="username" placeholder="USER_ID"
+                  class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
+              </div>
+              <div>
+                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Access Role</label>
+                <select name="login_role" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50 font-bold uppercase tracking-widest text-[10px]">
+                  <option>Student</option>
+                  <option>Teacher</option>
+                  <option>Admin</option>
+                </select>
+              </div>
             </div>
 
             <div>
               <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Secure Password</label>
-              <input type="password" name="password" placeholder="ENTER YOUR SECURE PASSWORD"
+              <input type="password" name="password" placeholder="••••••••"
                 class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
             </div>
 

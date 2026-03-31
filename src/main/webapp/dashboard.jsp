@@ -1,5 +1,5 @@
 <%@ page import="java.sql.*, java.util.*, com.gurukul.*, java.text.SimpleDateFormat, jakarta.servlet.ServletContext" %>
-
+<jsp:useBean id="user" class="com.gurukul.userProfileBean" scope="session" />
 <%
     if (session.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
@@ -111,7 +111,7 @@
               
               /* PRECISION HUD SIDEBAR ACCENTS */
               .hud-corner { @apply absolute w-5 h-5 border-red-500 shadow-[0_0_15px_rgba(255,51,51,0.4)] z-20; }
-              .terminal-index { @apply text-[7px] text-gray-300 font-bold tracking-widest mr-2 group-hover:text-red-500 transition-colors opacity-50; }
+              .terminal-index { @apply text-[7px] text-gray-300 font-bold tracking-widest mr-2 group-hover:text-red-500 transition-colors opacity-0 group-hover/sidebar:opacity-50; }
               .connector-line { @apply absolute top-24 bottom-24 w-[1px] bg-black/[0.04] z-0 transition-all duration-500; }
               .active-bar { @apply absolute left-0 top-0 bottom-0 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,51,51,0.4)]; }
             </style>
@@ -126,7 +126,10 @@
             <!-- SYSTEM TOP BAR -->
             <div class="relative z-50 border-b border-black/5 px-4 md:px-6 py-2 flex justify-between items-center text-[9px] text-gray-400 bg-white/80 backdrop-blur-md uppercase tracking-[0.3em] font-bold">
               <div class="flex items-center gap-4">
-                <span class="text-red-500 animate-pulse">√¢è</span>
+                <button id="mobile-toggle" class="md:hidden p-2 -ml-2 text-gray-400 hover:text-red-500 transition-colors">
+                  <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+                <span class="text-red-500 animate-pulse">&#10033;</span>
                 <span>GURUKUL_ILE / ONLINE</span>
               </div>
               <span class="hidden md:inline opacity-60">"Innovation distinguishes between a leader and a follower."</span>
@@ -175,7 +178,7 @@
                       <div class="w-6 h-6 flex items-center justify-center shrink-0">
                         <i data-lucide="home" class="w-5 h-5 text-red-500 shadow-[0_0_15px_rgba(255,51,51,0.2)]"></i>
                       </div>
-                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[01]</span>
+                      <span class="terminal-index hidden md:group-hover/sidebar:block transition-all duration-500">[01]</span>
                       <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-red-500">Dashboard</span>
                     </a>
 
@@ -183,7 +186,7 @@
                       <div class="w-6 h-6 flex items-center justify-center shrink-0">
                         <i data-lucide="users" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
                       </div>
-                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[02]</span>
+                      <span class="terminal-index hidden md:group-hover/sidebar:block transition-all duration-500">[02]</span>
                       <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Students</span>
                     </a>
 
@@ -218,19 +221,29 @@
                       <div class="w-6 h-6 flex items-center justify-center shrink-0">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all"></i>
                       </div>
-                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[99]</span>
+                      <span class="terminal-index hidden md:group-hover/sidebar:block transition-all duration-500">[99]</span>
                       <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-500 group-hover/item:text-red-500">Deauth</span>
                     </a>
                     
-                    <div class="p-2 border-y border-black/5 flex items-center gap-4 group/profile cursor-pointer relative overflow-hidden bg-gray-50/20 hover:bg-white transition-all w-full justify-center md:justify-start">
-                      <div class="w-10 h-10 bg-white flex items-center justify-center shrink-0 border border-black/5 relative z-10 rounded-sm">
-                        <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover/profile:text-red-500 transition-colors"></i>
-                      </div>
-                      <div class="block md:hidden md:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 relative z-10">
-                        <div class="text-[10px] font-bold text-gray-900 truncate w-32 uppercase tracking-[0.2em] font-[Orbitron]"><%= session.getAttribute("username") %></div>
-                        <div class="text-[7px] text-red-500 font-bold tracking-[0.4em] uppercase mt-1">CORE_AUTHORIZED</div>
-                      </div>
-                    </div>
+                    <a href="userProfile.jsp"
+   class="p-2 border-y border-black/5 flex items-center gap-4 group/profile cursor-pointer relative overflow-hidden bg-gray-50/20 hover:bg-white transition-all w-full justify-center md:justify-start">
+
+  <div class="w-10 h-10 bg-white flex items-center justify-center shrink-0 border border-black/5 relative z-10 rounded-sm">
+    <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover/profile:text-red-500 transition-colors"></i>
+  </div>
+
+  <div class="block md:hidden md:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 relative z-10">
+    
+    <div class="text-[10px] font-bold text-gray-900 truncate w-32 uppercase tracking-[0.2em] font-[Orbitron]">
+      ${user.userName}
+    </div>
+
+    <div class="text-[7px] text-red-500 font-bold tracking-[0.4em] uppercase mt-1">
+      CORE_AUTHORIZED
+    </div>
+
+  </div>
+</a>
                   </div>
                 </div>
               </aside>
@@ -413,7 +426,7 @@
                         <span class="text-[7px] text-red-500 font-bold tracking-[0.4em] mb-1">MODULE_01 //</span>
                         <h2 class="font-[Orbitron] text-[10px] tracking-[0.4em] text-gray-400 uppercase">Pending_Submissions</h2>
                       </div>
-                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">ì*</span>
+                      <span class="text-red-500 text-xl group-hover:rotate-90 transition-transform duration-500">@*</span>
                     </div>
                     <div class="flex-grow flex flex-col justify-center relative z-10">
                       <div class="text-7xl font-[Orbitron] tracking-tighter mb-4 text-gray-900 drop-shadow-sm group-hover:text-red-500 transition-colors">03</div>
@@ -469,7 +482,7 @@
                 <footer class="mt-auto py-8 border-t border-black/5 flex justify-between items-center text-[8px] text-gray-400 uppercase tracking-[0.5em] font-bold">
                   <div class="flex gap-12 items-center">
                     <div class="flex gap-4 text-gray-500 hover:text-red-500 transition-colors cursor-pointer">
-                      <span>¬© 2026_GKL_CORE</span>
+                      <span>@ 2026_GKL_CORE</span>
                       <span class="opacity-30 self-center h-1 w-1 bg-gray-400 rounded-full"></span>
                       <span>SECURE_LINKv2</span>
                     </div>
@@ -569,3 +582,4 @@
           </body>
 
           </html>
+
