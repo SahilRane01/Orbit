@@ -27,3 +27,15 @@ CREATE TABLE events (
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE meetings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    teacher_id INT NOT NULL,
+    teacher_name VARCHAR(100),
+    meeting_id VARCHAR(100) NOT NULL,
+    course VARCHAR(100),
+    heading VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    scheduled_time DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

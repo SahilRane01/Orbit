@@ -8,6 +8,7 @@
 
     List<noticeBoard> notices = new ArrayList<>();
     List<eventBean> events = new ArrayList<>();
+    List<Map<String, String>> activeMeetings = new ArrayList<>();
 %>
 
 <% 
@@ -22,6 +23,19 @@
           DB_User,
           DB_pwd
           );
+
+          // Fetch Global Active Meetings (De-restricted)
+          String meetSql = "SELECT * FROM meetings WHERE status = 'ACTIVE' ORDER BY created_at DESC";
+          PreparedStatement psMeet = conn.prepareStatement(meetSql);
+          ResultSet rsMeet = psMeet.executeQuery();
+          while (rsMeet.next()) {
+              Map<String, String> m = new HashMap<>();
+              m.put("id", rsMeet.getString("meeting_id"));
+              m.put("teacher", rsMeet.getString("teacher_name"));
+              activeMeetings.add(m);
+          }
+          rsMeet.close();
+          psMeet.close();
 
           String noticeSql = "SELECT * FROM noticeboard ORDER BY created_at DESC LIMIT 5";
           PreparedStatement psNotice = conn.prepareStatement(noticeSql);
@@ -131,6 +145,13 @@
                 </button>
                 <span class="text-red-500 animate-pulse">&#10033;</span>
                 <span>GURUKUL_ILE / ONLINE</span>
+                <span class="opacity-30 mx-2">|</span>
+                <span class="text-[7px] text-red-500/80 tracking-widest uppercase">SIG_STRENGTH: <%= activeMeetings.size() > 0 ? "98%" : "0%" %> [SIGNALS: <%= activeMeetings.size() %>]</span>
+                <script>
+                  if (!window.isSecureContext && window.location.hostname !== "localhost") {
+                    document.write('<span class="opacity-30 mx-2">|</span><span class="text-[7px] text-red-500 animate-pulse font-black">[LAN_MODE: SEC_OVERRIDE_REQUIRED]</span>');
+                  }
+                </script>
               </div>
               <span class="hidden md:inline opacity-60">"Innovation distinguishes between a leader and a follower."</span>
               <div class="flex items-center gap-4">
@@ -212,6 +233,12 @@
                       </div>
                       <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[05]</span>
                       <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Alerts</span>
+                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                      <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                        <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all group-hover/item:scale-110"></i>
+                      </div>
+                      <span class="terminal-index hidden md:block lg:group-hover/sidebar:block md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500">[06]</span>
+                      <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900 group-hover/item:text-red-500">Briefings</span>
                     </a>
                   </nav>
 
@@ -278,6 +305,39 @@
 
                 <!-- CONTENT GRID -->
                 <div class="grid grid-cols-12 gap-8 pb-12 items-start">
+
+                  <!-- LIVE BRIEFING SIGNAL (DYNAMIC ALERT) -->
+                  <% if (!activeMeetings.isEmpty()) { 
+                      Map<String, String> meeting = activeMeetings.get(0); // Take the latest
+                  %>
+                  <div class="col-span-12 animate-pulse">
+                    <div class="glass border-l-4 border-red-500 p-6 flex flex-col md:flex-row justify-between items-center gap-6 bg-red-500/[0.02]">
+                        <div class="flex items-center gap-6">
+                            <div class="relative">
+                                <i data-lucide="radio" class="w-8 h-8 text-red-500"></i>
+                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-[Orbitron] text-sm tracking-[0.3em] font-black text-gray-900 uppercase">Signal_Intercepted: Live_Briefing</h3>
+                                <p class="text-[9px] text-gray-400 tracking-[0.2em] uppercase font-bold mt-1">Source: <span class="text-red-500 border-b border-red-500/20"><%= meeting.get("teacher") %></span> / AUTH_LEVEL: ALPHA</p>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-[7px] text-gray-400 font-bold tracking-widest uppercase">Target_Match: <%= user.getCourse() != null ? user.getCourse().trim().toUpperCase() : "NULL" %></span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="meeting.jsp?id=<%= meeting.get("id") %>&room=<%= meeting.get("teacher") %>" class="bg-[#0a0a0a] text-white px-10 py-4 font-[Orbitron] text-[10px] tracking-[0.4em] uppercase hover:bg-red-500 transition-all shadow-2xl flex items-center gap-3 group">
+                            Establish_Connection <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                  </div>
+                  <% } else { %>
+                  <!-- SIGNAL SCANNING DEBUG (Subtle) -->
+                  <div class="col-span-12 px-6 py-2 border-x border-black/5 flex justify-between items-center bg-gray-50/50">
+                    <span class="text-[7px] text-gray-400 font-bold tracking-[0.3em] uppercase italic">System_Scanning: Active_Signal_Search [Course: <%= user.getCourse() != null ? user.getCourse().trim().toUpperCase() : "NOT_SPECIFIED" %>]</span>
+                    <span class="text-[7px] text-gray-300 font-bold tracking-widest animate-pulse">NO_SIGNALS_DETECTED</span>
+                  </div>
+                  <% } %>
 
                   <!-- NOTICE BOARD: BROADCAST MONITOR -->
                   <div class="col-span-12 lg:col-span-8 glass border border-black/10 p-8 relative overflow-hidden group neon-glow transition-all duration-500">

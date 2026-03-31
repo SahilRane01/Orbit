@@ -10,6 +10,7 @@
     List<noticeBoard> notices = new ArrayList<>();
     List<eventBean> events = new ArrayList<>();
     Set<String> uniqueStreams = new TreeSet<>();
+    List<Map<String, String>> activeMeetings = new ArrayList<>();
 
     try {
         ServletContext context = getServletContext();
@@ -63,8 +64,24 @@
             events.add(eb);
         }
 
+        // Fetch Global Active Meetings
+        String meetSql = "SELECT * FROM meetings WHERE status = 'ACTIVE' ORDER BY created_at DESC";
+        PreparedStatement psMeet = conn.prepareStatement(meetSql);
+        ResultSet rsMeet = psMeet.executeQuery();
+        while (rsMeet.next()) {
+            Map<String, String> m = new HashMap<>();
+            m.put("id", rsMeet.getString("meeting_id"));
+            m.put("teacher", rsMeet.getString("teacher_name"));
+            activeMeetings.add(m);
+        }
+        rsMeet.close();
+        psMeet.close();
+
         conn.close();
     } catch (Exception e) {
+        %>
+        <!-- TACTICAL_ERROR: <%= e.getMessage() %> -->
+        <%
         e.printStackTrace();
     }
 %>
@@ -101,6 +118,8 @@
             </button>
             <span class="text-red-500 animate-pulse">&#10033;</span>
             <span>GURUKUL_ILE / FACULTY_COMMAND_CENTER</span>
+            <span class="opacity-30 mx-2">|</span>
+            <span class="text-[7px] text-red-500/80 tracking-widest uppercase">SIG_STRENGTH: <%= activeMeetings.size() > 0 ? "98%" : "0%" %> [SIGNALS: <%= activeMeetings.size() %>]</span>
         </div>
         <div class="flex items-center gap-6">
             <span class="hidden md:inline text-gray-300">HUB_DATA_STREAM: ACTIVE</span>
@@ -118,10 +137,15 @@
                 </div>
                 <!-- NAV -->
                 <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch">
-                   <a href="#" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] relative border-l-4 border-red-500 w-full">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-red-500"></i>
+                    <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 <%= request.getRequestURI().endsWith("teacherDashboard.jsp") ? "bg-red-500/[0.03] border-l-4 border-red-500" : "hover:bg-red-500/5" %> w-full">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5 <%= request.getRequestURI().endsWith("teacherDashboard.jsp") ? "text-red-500" : "text-gray-400 group-hover:text-red-500" %>"></i>
                         <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Command</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase <%= request.getRequestURI().endsWith("teacherDashboard.jsp") ? "text-red-500" : "" %>">Command</span>
+                    </a>
+                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 <%= request.getRequestURI().endsWith("briefings.jsp") ? "bg-red-500/[0.03] border-l-4 border-red-500" : "hover:bg-red-500/5" %> w-full">
+                        <i data-lucide="video" class="w-5 h-5 <%= request.getRequestURI().endsWith("briefings.jsp") ? "text-red-500" : "text-gray-400 group-hover:text-red-500" %>"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[06]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase <%= request.getRequestURI().endsWith("briefings.jsp") ? "text-red-500" : "" %>">Briefings</span>
                     </a>
                     <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full mt-auto">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
@@ -134,6 +158,29 @@
 
         <!-- CONTENT -->
         <main class="flex-grow overflow-y-auto p-8 flex flex-col gap-8 scrollbar-hide">
+            
+            <!-- LIVE BRIEFING SIGNAL (DYNAMIC ALERT) -->
+            <% if (!activeMeetings.isEmpty()) { 
+                Map<String, String> meeting = activeMeetings.get(0); 
+            %>
+            <div class="animate-pulse">
+              <div class="glass border-l-4 border-red-500 p-6 flex flex-col md:flex-row justify-between items-center gap-6 bg-red-500/[0.02]">
+                  <div class="flex items-center gap-6">
+                      <div class="relative">
+                          <i data-lucide="radio" class="w-8 h-8 text-red-500"></i>
+                          <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping"></div>
+                      </div>
+                      <div>
+                          <h3 class="font-[Orbitron] text-sm tracking-[0.3em] font-black text-gray-900 uppercase">Mission_Live: Signal_Broadcasting</h3>
+                          <p class="text-[9px] text-gray-400 tracking-[0.2em] uppercase font-bold mt-1">Status: <span class="text-red-500 border-b border-red-500/20">Operational</span> / AUTH_LEVEL: ALPHA</p>
+                      </div>
+                  </div>
+                  <a href="meeting.jsp?id=<%= meeting.get("id") %>&room=<%= meeting.get("teacher") %>" class="bg-[#0a0a0a] text-white px-10 py-4 font-[Orbitron] text-[10px] tracking-[0.4em] uppercase hover:bg-red-500 transition-all shadow-2xl flex items-center gap-3">
+                      Enter_Briefing_Room <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </a>
+              </div>
+            </div>
+            <% } %>
             
             <!-- SECTION 1: FACULTY PERSONA -->
             <section class="grid grid-cols-12 gap-8">
@@ -166,14 +213,25 @@
                         <h3 class="font-[Orbitron] text-sm tracking-[0.2em] font-bold mb-2 uppercase">Command_Status</h3>
                         <p class="text-[10px] tracking-[0.1em] opacity-80 uppercase leading-loose border-l-2 border-white/50 pl-4 py-2">System healthy. Secure protocols initiated. Access authorized via endpoint <span class="underline">GKL-ILE_V4</span>. Internal network encryption active.</p>
                     </div>
-                    <div class="flex gap-10 mt-6 pt-4 border-t border-white/20 relative z-10">
-                        <div>
-                            <div class="text-[12px] font-black font-[Orbitron] uppercase"><%= students.size() %></div>
-                            <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Units_Managed</div>
+                    <div class="flex justify-between items-end mt-6 pt-4 border-t border-white/20 relative z-10 gap-8">
+                        <div class="flex gap-10">
+                            <div>
+                                <div class="text-[12px] font-black font-[Orbitron] uppercase"><%= students.size() %></div>
+                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Units_Managed</div>
+                            </div>
+                            <div>
+                                <div class="text-[12px] font-black font-[Orbitron] uppercase">98%</div>
+                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Efficiency_Rate</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-[12px] font-black font-[Orbitron] uppercase">98%</div>
-                            <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Efficiency_Rate</div>
+                        <div class="flex-grow max-w-[240px]">
+                            <form action="meetingAction" method="post">
+                                <input type="hidden" name="action" value="START_MEETING">
+                                <input type="hidden" name="meetingId" value="MEET_<%= System.currentTimeMillis() %>">
+                                <button type="submit" class="w-full bg-white text-red-500 py-3 px-6 font-[Orbitron] text-[10px] tracking-[0.2em] font-black uppercase hover:bg-black hover:text-white transition-all shadow-xl flex items-center justify-center gap-3">
+                                    <i data-lucide="video" class="w-4 h-4"></i> Initiate_Briefing
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

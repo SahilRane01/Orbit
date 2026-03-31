@@ -51,6 +51,15 @@
     <url-pattern>/teacherAction</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>MeetingServlet</servlet-name>
+    <servlet-class>com.gurukul.MeetingServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MeetingServlet</servlet-name>
+    <url-pattern>/meetingAction</url-pattern>
+  </servlet-mapping>
+
   <!-- Global Context Parameters -->
   <context-param>
     <param-name>DB_URL</param-name>

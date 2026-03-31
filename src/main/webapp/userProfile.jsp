@@ -109,6 +109,13 @@
                         <span class="terminal-index hidden md:group-hover/sidebar:block transition-all duration-500">[01]</span>
                         <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900">Dashboard</span>
                     </a>
+                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-black/[0.02] transition-all relative border-l border-transparent hover:border-red-500/20 w-full justify-center md:justify-start">
+                        <div class="w-6 h-6 flex items-center justify-center shrink-0">
+                            <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover/item:text-red-500 transition-all"></i>
+                        </div>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block transition-all duration-500">[06]</span>
+                        <span class="block md:hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-[0.4em] font-bold uppercase md:opacity-0 md:group-hover/sidebar:opacity-100 transition-all duration-500 whitespace-nowrap text-gray-900">Briefings</span>
+                    </a>
                 </nav>
 
                 <div class="flex-shrink-0 flex flex-col gap-2 relative z-10 items-center md:items-stretch mt-auto">
