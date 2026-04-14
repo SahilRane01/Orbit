@@ -1,308 +1,152 @@
-<% if (session.getAttribute("user") != null) { response.sendRedirect("dashboard.jsp"); return; } %>
+<%@ page import="com.gurukul.models.UserProfile" %>
+<% 
+    UserProfile userProfile = (UserProfile) session.getAttribute("user");
+    if (userProfile != null) { 
+        if ("Teacher".equalsIgnoreCase(userProfile.getRole())) {
+            response.sendRedirect("teacherDashboard.jsp");
+        } else {
+            response.sendRedirect("dashboard.jsp");
+        }
+        return; 
+    } 
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
- 
-  <title>Login - Gurukul</title>
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorize - Gurukul ILE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style type="text/tailwindcss">
+        .grid-bg { background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px); background-size: 40px 40px; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0, 0, 0, 0.05); }
+        .input-tactical { @apply w-full bg-gray-50 border border-black/5 p-4 text-[11px] font-bold uppercase tracking-widest font-[Orbitron] focus:border-red-500 focus:bg-white outline-none transition-all; }
+        .label-tactical { @apply text-[7px] text-gray-400 font-bold tracking-[0.4em] uppercase block mb-2; }
+    </style>
 </head>
+<body class="font-[Inter] bg-[#f8fafc] text-gray-900 min-h-screen flex flex-col overflow-x-hidden">
+    <div class="fixed inset-0 pointer-events-none grid-bg z-0 opacity-100"></div>
+    <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-[1] opacity-30"></canvas>
 
-<body class="font-[Inter] bg-[#f5f5f5] text-black relative">
-
-  <!-- 🔥 PARTICLE CANVAS (ADDED ONLY THIS) -->
-  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
-
-  <!-- GRID BACKGROUND -->
-  <div class="absolute inset-0 pointer-events-none"
-    style="
-      background-image:
-        linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-      background-size: 40px 40px;
-      z-index: 0;">
-  </div>
-
-  <div class="relative z-10 min-h-screen flex flex-col">
-    <!-- MICRO HEADER -->
-    <div class="border-b border-gray-300 px-6 py-2 flex justify-between text-xs text-gray-500">
-      <span>INDEPENDENT LEARNING ENVIRONMENT</span>
-      <span>"THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO." - STEVE JOBS</span>
-      <span>GURUKUL</span>
+    <!-- TOP BAR -->
+    <div class="relative z-50 border-b border-black/5 px-6 py-2 flex justify-between items-center text-[9px] text-gray-400 bg-white/80 backdrop-blur-md uppercase tracking-[0.3em] font-bold">
+        <div class="flex items-center gap-4">
+            <span class="text-red-500 animate-pulse">&#10033;</span>
+            <span>GURUKUL_ILE / AUTH_GATEWAY</span>
+        </div>
+        <a href="index.jsp" class="hover:text-red-500 transition-colors">TERMINATE_PROCESS</a>
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="border-b border-gray-300 px-6 py-3 flex justify-between items-center bg-[#f5f5f5]">
-      <h1 class="font-[Orbitron] tracking-widest text-lg">
-        <a href="index.html">GURUKUL</a>
-      </h1>
+    <div class="flex-grow flex items-center justify-center p-6 relative z-10">
+        <div class="max-w-md w-full">
+            
+            <% String status = request.getParameter("status"); %>
+            <% if ("registered".equals(status)) { %>
+                <div class="glass border-l-4 border-green-500 p-4 mb-6 bg-green-500/5 flex items-center gap-4 animate-bounce">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-green-500"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-green-700">Identity_Provisioned: Please_Authorize</span>
+                </div>
+            <% } else if ("loggedout".equals(status)) { %>
+                <div class="glass border-l-4 border-red-500 p-4 mb-6 bg-red-500/5 flex items-center gap-4">
+                    <i data-lucide="log-out" class="w-5 h-5 text-red-500"></i>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-red-700">Signal_Terminated: Session_Invalidated</span>
+                </div>
+            <% } %>
 
-      <div class="hidden md:flex gap-4 text-sm text-gray-600 uppercase tracking-widest">
-        <span>LMS</span>
-        <span>/</span>
-        <span>AUTH</span>
-        <span>/</span>
-        <span>2026</span>
-      </div>
+            <div class="glass border-l-4 border-black shadow-2xl relative overflow-hidden bg-white/90">
+                <div class="bg-black p-8 text-center text-white relative">
+                    <div class="absolute top-0 right-0 p-4 text-[8px] font-mono opacity-20">V5.0_CORE</div>
+                    <h1 class="font-[Orbitron] text-2xl tracking-[0.4em] font-black uppercase">Authorize</h1>
+                    <p class="text-[8px] text-gray-500 tracking-[0.6em] mt-2 font-bold uppercase">Gurukul Neural Interface</p>
+                </div>
 
-      <a href="index.jsp" class="border border-black px-4 py-1 text-sm hover:bg-black hover:text-white transition uppercase">
-        Back to Home
-      </a>
-    </nav>
+                <div class="flex border-b border-black/5 font-[Orbitron] text-[9px] font-black tracking-widest">
+                    <button id="loginBtn" onclick="showForm('login')" class="flex-1 py-4 bg-gray-50 border-r border-black/5 hover:bg-white transition-all text-red-500 border-b-2 border-b-red-500">LOGIN</button>
+                    <button id="regBtn" onclick="showForm('reg')" class="flex-1 py-4 bg-gray-50 hover:bg-white transition-all text-gray-400">REGISTER</button>
+                </div>
 
-    <!-- CENTER WRAPPER -->
-    <div class="flex-grow flex items-center justify-center py-10 relative">
-      <!-- DECORATIVE ELEMENTS -->
-      <div class="absolute top-10 left-10 text-red-500 text-2xl">*</div>
-      <div class="absolute bottom-10 right-10 text-gray-300 text-4xl font-[Orbitron]">LOGIN</div>
+                <div class="p-10">
+                    <!-- LOGIN FORM -->
+                    <form id="loginForm" action="login" method="post" class="space-y-8">
+                        <div>
+                            <label class="label-tactical">Auth_ID / Username</label>
+                            <input type="text" name="username" placeholder="USER_ALPHA" class="input-tactical" required>
+                        </div>
+                        <div>
+                            <label class="label-tactical">Access_Cipher</label>
+                            <input type="password" name="password" placeholder="••••••••" class="input-tactical" required>
+                        </div>
+                        <button type="submit" class="w-full bg-red-500 text-white py-4 font-[Orbitron] text-[11px] tracking-[0.4em] font-black uppercase hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
+                            <i data-lucide="key" class="w-4 h-4"></i> Establish_Link
+                        </button>
+                    </form>
 
-    <!-- MAIN CARD -->
-    <div class="relative z-10 w-full max-w-lg border border-gray-300 bg-white">
-
-      <!-- HEADER -->
-      <div class="border-b border-gray-300 p-8 text-center bg-[#f5f5f5]">
-        <p class="text-[10px] text-gray-400 tracking-[0.2em] mb-2 uppercase">Welcome to the Platform</p>
-        <h1 class="font-[Orbitron] tracking-[0.3em] text-2xl uppercase">
-          GURUKUL
-        </h1>
-        <div class="mt-4 flex justify-center">
-             <div class="h-1 w-12 bg-red-500"></div>
+                    <!-- REGISTRATION FORM -->
+                    <form id="regForm" action="registration" method="post" class="hidden space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="label-tactical">Full_Name</label><input type="text" name="full_name" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Auth_ID</label><input type="text" name="username" class="input-tactical" required></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="label-tactical">Relay_Email</label><input type="email" name="email" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Comms_Ph</label><input type="text" name="phone" class="input-tactical"></div>
+                        </div>
+                        <div>
+                            <label class="label-tactical">Assigned_Role</label>
+                            <select name="role" class="input-tactical">
+                                <option value="Student">STUDENT_UNIT</option>
+                                <option value="Teacher">FACULTY_COMMANDER</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div><label class="label-tactical">Course</label><input type="text" name="course" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Batch</label><input type="text" name="batch" class="input-tactical"></div>
+                            <div><label class="label-tactical">Spec.</label><input type="text" name="specialization" class="input-tactical"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="label-tactical">Cipher</label><input type="password" name="password" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Confirm</label><input type="password" name="cpassword" class="input-tactical" required></div>
+                        </div>
+                        <button type="submit" class="w-full bg-black text-white py-4 font-[Orbitron] text-[11px] tracking-[0.4em] font-black uppercase hover:bg-red-500 transition-all shadow-xl flex items-center justify-center gap-3">
+                            <i data-lucide="shield-plus" class="w-4 h-4"></i> Provision_ID
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <!-- TOGGLE -->
-      <div class="flex border-b border-gray-300 font-[Orbitron] tracking-widest text-xs">
-        <button id="loginToggle" onclick="showLogin()" class="w-1/2 p-4 border-r border-gray-300 bg-black text-white transition-all duration-300">
-          LOGIN
-        </button>
-        <button id="registerToggle" onclick="showRegister()" class="w-1/2 p-4 hover:bg-gray-100 transition-all duration-300">
-          REGISTER
-        </button>
-      </div>
-
-      <!-- SCROLLABLE AREA -->
-      <div class="max-h-[80vh] overflow-y-auto">
-
-        <div id="loginForm" class="p-8">
-          <form action="login" method="post" class="space-y-6">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Username / ID</label>
-                <input type="text" name="username" placeholder="USER_ID"
-                  class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Access Role</label>
-                <select name="login_role" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50 font-bold uppercase tracking-widest text-[10px]">
-                  <option>Student</option>
-                  <option>Teacher</option>
-                  <option>Admin</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Secure Password</label>
-              <input type="password" name="password" placeholder="••••••••"
-                class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-            </div>
-
-            <button type="submit"
-              class="w-full bg-red-500 text-white py-4 font-[Orbitron] tracking-[0.2em] text-sm hover:bg-red-600 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
-              AUTHORIZE
-            </button>
-          </form>
-        </div>
-
-        <div id="registerForm" class="p-8 hidden">
-          <form action="registration" method="post" class="space-y-4">
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Full Name</label>
-                <input type="text" name="full_name" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Username</label>
-                <input type="text" name="username" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Email Address</label>
-                <input type="email" name="email" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Phone Number</label>
-                <input type="text" name="phone" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Designated Role</label>
-              <select name="role" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-                <option>Student</option>
-                <option>Teacher</option>
-                <option>Admin</option>
-              </select>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Course</label>
-                <input type="text" name="course" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Batch</label>
-                <input type="text" name="batch" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Spec.</label>
-                <input type="text" name="specialization" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Password</label>
-                <input type="password" name="password" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-              <div>
-                <label class="block text-[10px] text-gray-400 tracking-widest uppercase mb-1">Confirm</label>
-                <input type="password" name="cpassword" class="w-full border border-gray-300 p-2 text-sm focus:outline-none focus:border-red-500 transition-colors bg-gray-50">
-              </div>
-            </div>
-
-            <button type="submit"
-              class="w-full bg-black text-white py-4 font-[Orbitron] tracking-[0.2em] text-sm hover:bg-gray-900 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
-              INITIALIZE ACCOUNT
-            </button>
-
-          </form>
-        </div>
-
-      </div>
-
     </div>
 
-  </div>
-
-  <!-- TOGGLE SCRIPT -->
-  <script>
-    function showLogin() {
-      document.getElementById("loginForm").classList.remove("hidden");
-      document.getElementById("registerForm").classList.add("hidden");
-      
-      document.getElementById("loginToggle").classList.add("bg-black", "text-white");
-      document.getElementById("loginToggle").classList.remove("hover:bg-gray-100");
-      
-      document.getElementById("registerToggle").classList.remove("bg-black", "text-white");
-      document.getElementById("registerToggle").classList.add("hover:bg-gray-100");
-    }
-
-    function showRegister() {
-      document.getElementById("registerForm").classList.remove("hidden");
-      document.getElementById("loginForm").classList.add("hidden");
-
-      document.getElementById("registerToggle").classList.add("bg-black", "text-white");
-      document.getElementById("registerToggle").classList.remove("hover:bg-gray-100");
-      
-      document.getElementById("loginToggle").classList.remove("bg-black", "text-white");
-      document.getElementById("loginToggle").classList.add("hover:bg-gray-100");
-    }
-  </script>
-
-  <!-- 🔥 PARTICLE SYSTEM -->
-  <script>
-    const canvas = document.getElementById("particleCanvas");
-    const ctx = canvas.getContext("2d");
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    let mouse = { x: null, y: null };
-
-    window.addEventListener("mousemove", (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    class Particle {
-      constructor(x, y) {
-        this.baseX = x;
-        this.baseY = y;
-        this.x = x;
-        this.y = y;
-        this.vx = 0;
-        this.vy = 0;
-      }
-
-      update() {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 80) {
-          let force = (80 - dist) / 80;
-          let angle = Math.atan2(dy, dx);
-          this.vx += Math.cos(angle) * force * 2;
-          this.vy += Math.sin(angle) * force * 2;
+    <script>
+        lucide.createIcons();
+        function showForm(type) {
+            const isLogin = type === 'login';
+            document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+            document.getElementById('regForm').classList.toggle('hidden', isLogin);
+            document.getElementById('loginBtn').className = isLogin ? 'flex-1 py-4 bg-white text-red-500 border-b-2 border-b-red-500 transition-all' : 'flex-1 py-4 bg-gray-50 text-gray-400 transition-all';
+            document.getElementById('regBtn').className = !isLogin ? 'flex-1 py-4 bg-white text-red-500 border-b-2 border-b-red-500 transition-all' : 'flex-1 py-4 bg-gray-50 text-gray-400 transition-all';
         }
 
-        this.vx += (this.baseX - this.x) * 0.05;
-        this.vy += (this.baseY - this.y) * 0.05;
-
-        this.vx *= 0.85;
-        this.vy *= 0.85;
-
-        this.x += this.vx;
-        this.y += this.vy;
-      }
-
-      draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.25)";
-        ctx.fillRect(this.x, this.y, 2, 2);
-      }
-    }
-
-    let particles = [];
-
-    function initParticles() {
-      particles = [];
-      let gap = 40;
-
-      for (let x = 0; x < canvas.width; x += gap) {
-        for (let y = 0; y < canvas.height; y += gap) {
-          particles.push(new Particle(x, y));
+        const canvas = document.getElementById("particleCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        class P {
+            constructor(x,y){this.bx=x;this.by=y;this.x=x;this.y=y;this.vx=0;this.vy=0;}
+            update(){
+                let dx=this.x-mx,dy=this.y-my,d=Math.sqrt(dx*dx+dy*dy);
+                if(d<80){let f=(80-d)/80,a=Math.atan2(dy,dx);this.vx+=Math.cos(a)*f*2;this.vy+=Math.sin(a)*f*2;}
+                this.vx+=(this.bx-this.x)*0.05;this.vy+=(this.by-this.y)*0.05;
+                this.vx*=0.85;this.vy*=0.85;this.x+=this.vx;this.y+=this.vy;
+            }
+            draw(){ctx.fillStyle="rgba(0,0,0,0.15)";ctx.fillRect(this.x,this.y,2,2);}
         }
-      }
-    }
-
-    initParticles();
-
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-
-      requestAnimationFrame(animateParticles);
-    }
-
-    animateParticles();
-  </script>
-
+        let ps=[],mx=-100,my=-100;
+        window.addEventListener("mousemove",(e)=>{mx=e.clientX;my=e.clientY;});
+        for(let x=0;x<canvas.width;x+=40)for(let y=0;y<canvas.height;y+=40)ps.push(new P(x,y));
+        function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);ps.forEach(p=>{p.update();p.draw();});requestAnimationFrame(anim);}
+        anim();
+    </script>
 </body>
 </html>

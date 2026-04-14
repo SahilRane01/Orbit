@@ -23,64 +23,84 @@ public class TeacherController extends HttpServlet {
         }
 
         String action = request.getParameter("action");
+        String source = request.getParameter("source");
+        if (source == null) source = "teacherDashboard.jsp";
+
         ServletContext context = getServletContext();
         String DB = context.getInitParameter("DB_URL");
         String DB_User = context.getInitParameter("DB_USERNAME");
         String DB_pwd = context.getInitParameter("DB_PWD");
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://" + DB + ":3306/gurukul", DB_User, DB_pwd)) {
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection("jdbc:mysql://" + DB + ":3306/gurukul", DB_User, DB_pwd)) {
+                
+                if ("ADD_NOTICE".equals(action)) {
+                    String heading = request.getParameter("heading");
+                    String body = request.getParameter("body");
+                    String author = user.getFullName();
+                    String sql = "INSERT INTO noticeboard (heading, body, whom) VALUES (?, ?, ?)";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setString(1, heading);
+                        ps.setString(2, body);
+                        ps.setString(3, author);
+                        ps.executeUpdate();
+                    }
+                } else if ("DELETE_NOTICE".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    String sql = "DELETE FROM noticeboard WHERE id = ?";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setInt(1, id);
+                        ps.executeUpdate();
+                    }
+                } else if ("ADD_EVENT".equals(action)) {
+                    String name = request.getParameter("name");
+                    String date = request.getParameter("date");
+                    String desc = request.getParameter("description");
+                    String sql = "INSERT INTO events (event_name, event_date, description) VALUES (?, ?, ?)";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setString(1, name);
+                        ps.setDate(2, Date.valueOf(date));
+                        ps.setString(3, desc);
+                        ps.executeUpdate();
+                    }
+                } else if ("DELETE_EVENT".equals(action)) {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    String sql = "DELETE FROM events WHERE id = ?";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setInt(1, id);
+                        ps.executeUpdate();
+                    }
+                } else if ("ADD_STUDENT".equals(action)) {
+                    String fullname = request.getParameter("full_name");
+                    String username = request.getParameter("username");
+                    String email = request.getParameter("email");
+                    String phone = request.getParameter("phone");
+                    String course = request.getParameter("course");
+                    String batch = request.getParameter("batch");
+                    String specialization = request.getParameter("specialization");
+                    String password = request.getParameter("password");
 
-            if ("ADD_NOTICE".equals(action)) {
-                String heading = request.getParameter("heading");
-                String body = request.getParameter("body");
-                String author = user.getFullName(); // From session used as 'whom'
-                String sql = "INSERT INTO noticeboard (heading, body, whom) VALUES (?, ?, ?)";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setString(1, heading);
-                    ps.setString(2, body);
-                    ps.setString(3, author);
-                    ps.executeUpdate();
-                }
-            } else if ("DELETE_NOTICE".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                String sql = "DELETE FROM noticeboard WHERE id = ?";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setInt(1, id);
-                    ps.executeUpdate();
-                }
-            } else if ("ADD_EVENT".equals(action)) {
-                String name = request.getParameter("name");
-                String date = request.getParameter("date");
-                String desc = request.getParameter("description");
-                String sql = "INSERT INTO events (event_name, event_date, description) VALUES (?, ?, ?)";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setString(1, name);
-                    ps.setDate(2, Date.valueOf(date));
-                    ps.setString(3, desc);
-                    ps.executeUpdate();
-                }
-            } else if ("DELETE_EVENT".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                String sql = "DELETE FROM events WHERE id = ?";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setInt(1, id);
-                    ps.executeUpdate();
-                }
-            } else if ("DELETE_STUDENT".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                String sql = "DELETE FROM users WHERE id = ? AND role = 'Student'";
-                try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                    ps.setInt(1, id);
-                    ps.executeUpdate();
+                    String sql = "INSERT INTO users (full_name, username, email, phone, role, course, batch, specialization, password) VALUES (?, ?, ?, ?, 'Student', ?, ?, ?, ?)";
+                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                        ps.setString(1, fullname);
+                        ps.setString(2, username);
+                        ps.setString(3, email);
+                        ps.setString(4, phone);
+                        ps.setString(5, course);
+                        ps.setString(6, batch);
+                        ps.setString(7, specialization);
+                        ps.setString(8, password);
+                        ps.executeUpdate();
+                    }
                 }
             }
 
-            response.sendRedirect("teacherDashboard.jsp?status=success");
+            response.sendRedirect(source + "?status=success");
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("teacherDashboard.jsp?status=error&msg=" + e.getMessage());
+            response.sendRedirect(source + "?status=error&msg=" + e.getMessage());
         }
     }
 }

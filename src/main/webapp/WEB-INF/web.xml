@@ -63,7 +63,7 @@
   <!-- Global Context Parameters -->
   <context-param>
     <param-name>DB_URL</param-name>
-    <param-value>10.241.165.231</param-value>
+    <param-value>10.187.73.231</param-value>
   </context-param>
 
   <context-param>

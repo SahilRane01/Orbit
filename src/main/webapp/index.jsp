@@ -1,321 +1,142 @@
-<% if (session.getAttribute("user") != null) { response.sendRedirect("dashboard.jsp"); return; } %>
+<%@ page import="com.gurukul.models.UserProfile" %>
+<% 
+    UserProfile userProfile = (UserProfile) session.getAttribute("user");
+    if (userProfile != null) { 
+        if ("Teacher".equalsIgnoreCase(userProfile.getRole())) {
+            response.sendRedirect("teacherDashboard.jsp");
+        } else {
+            response.sendRedirect("dashboard.jsp");
+        }
+        return; 
+    } 
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GURUKUL</title>
-
-  <!-- Tailwind -->
+  <title>GURUKUL_ILE / PRIMARY_GATEWAY</title>
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- CURSOR STYLE -->
   <style>
-    @keyframes blink {
-      0%, 50%, 100% { opacity: 1; }
-      25%, 75% { opacity: 0; }
-    }
-
-    #cursor {
-      animation: blink 1.2s infinite;
-      margin-left: 4px;
-    }
+    @keyframes blink { 0%, 50%, 100% { opacity: 1; } 25%, 75% { opacity: 0; } }
+    #cursor { animation: blink 1.2s infinite; margin-left: 4px; }
+    .grid-bg { background-image: linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 40px 40px; }
   </style>
 </head>
+<body class="font-[Inter] bg-[#f8fafc] text-black overflow-x-hidden">
+  <div class="fixed inset-0 pointer-events-none grid-bg z-0 opacity-100"></div>
+  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-[1] opacity-40"></canvas>
 
-<body class="font-[Inter] bg-[#f5f5f5] text-black relative">
-
-  <!-- 🔥 PARTICLE CANVAS -->
-  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
-
-  <!-- GRID BACKGROUND -->
-  <div class="absolute inset-0 pointer-events-none"
-    style="
-      background-image:
-        linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-      background-size: 40px 40px;
-      z-index: 0;">
-  </div>
-
-  <div class="relative z-10">
-
-    <!-- MICRO HEADER -->
-    <div class="border-b border-gray-300 px-6 py-2 flex justify-between text-xs text-gray-500">
-      <span>PROJECT</span>
-      <span>"THE ONLY WAY TO DO GREAT WORK IS TO LOVE WHAT YOU DO." - STEVE JOBS</span>
-      <span>GURUKUL</span>
+  <div class="relative z-10 min-h-screen flex flex-col">
+    <div class="border-b border-black/5 px-6 py-2 flex justify-between text-[9px] text-gray-400 uppercase tracking-[0.3em] font-bold bg-white/80 backdrop-blur-md">
+        <span>GURUKUL_ILE // SYSTEM_GATEWAY_V5</span>
+        <span class="hidden md:inline italic">"Knowledge is power. Information is liberating."</span>
+        <span>AUTH_STATUS: UNSECURED</span>
     </div>
 
-    <!-- NAVBAR -->
-    <nav class="border-b border-gray-300 px-6 py-3 flex justify-between items-center bg-[#f5f5f5]">
-      <h1 class="font-[Orbitron] tracking-widest text-lg">GURUKUL</h1>
-
-      <div class="hidden md:flex gap-4 text-sm text-gray-600">
-        <span>LMS</span>
-        <span>/</span>
-        <span>COLLABORATION</span>
-        <span>/</span>
-        <span>2026</span>
+    <nav class="border-b border-black/5 px-6 py-4 flex justify-between items-center bg-white/50 backdrop-blur-md">
+      <h1 class="font-[Orbitron] tracking-[0.4em] text-lg font-black text-gray-900 uppercase">Gurukul</h1>
+      <div class="flex items-center gap-8">
+          <div class="hidden md:flex gap-6 text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">
+            <span>LMS_CORE</span>
+            <span>/</span>
+            <span>NEURAL_NET</span>
+            <span>/</span>
+            <span>2026</span>
+          </div>
+          <a href="login.jsp" class="bg-red-500 text-white px-8 py-2 text-[10px] font-[Orbitron] tracking-[0.2em] font-bold hover:bg-black transition-all shadow-[0_10px_30px_rgba(255,51,51,0.2)]">
+            AUTHORIZE
+          </a>
       </div>
-
-      <a href="login.jsp" class="bg-red-500 text-white px-4 py-1 text-sm hover:bg-red-600 transition">
-        LOGIN
-      </a>
     </nav>
 
-    <!-- HERO -->
-    <section class="border-b border-gray-300 relative">
-
-      <div class="p-6 border-b border-gray-300">
-
-        <p class="text-xs text-gray-500 mb-2 tracking-widest">
-          ✱ EDUCATION + COLLABORATION
+    <main class="flex-grow flex flex-col pt-20">
+      <section class="px-6 md:px-20 mb-20">
+        <p class="text-[10px] text-red-500 font-black tracking-[0.6em] mb-4 uppercase">
+          ✱ NEURAL_EDUCATION_INTERFACE
         </p>
-
-        <h1 class="font-[Orbitron] text-6xl md:text-8xl tracking-widest">
-          <span id="heroText"></span><span id="cursor">|</span>
+        <h1 class="font-[Orbitron] text-6xl md:text-9xl tracking-tighter font-black text-gray-900 leading-none">
+          <span id="heroText"></span><span id="cursor" class="text-red-500">|</span>
         </h1>
+        <div class="grid md:grid-cols-2 mt-12 gap-12 items-end">
+            <div class="border-l-4 border-black pl-8 py-4">
+                <p class="text-2xl font-medium text-gray-800 mb-4 leading-tight uppercase tracking-tight">The ultimate Command Center for modern academic excellence.</p>
+                <p class="text-gray-400 text-xs leading-loose max-w-md font-bold uppercase tracking-widest italic opacity-60">Integrated Learning Environment optimized for precision Briefings and centralized Student Provisioning.</p>
+            </div>
+            <div class="bg-black text-white p-12 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 p-4 text-[9px] font-mono opacity-20">STATUS_ACTIVE</div>
+                <h3 class="font-[Orbitron] text-xl tracking-[0.3em] font-black italic relative z-10">LEARN / SYNC / EVOLVE</h3>
+                <div class="mt-4 w-20 h-1 bg-red-500 group-hover:w-full transition-all duration-700"></div>
+            </div>
+        </div>
+      </section>
 
+      <section class="grid grid-cols-1 md:grid-cols-3 border-y border-black/5 bg-white/30 backdrop-blur-sm">
+        <div class="p-10 border-r border-black/5 group hover:bg-white transition-all">
+            <span class="text-[8px] text-red-500 font-bold tracking-widest block mb-4 uppercase">MODULE_01</span>
+            <h3 class="font-[Orbitron] text-xs font-black uppercase mb-4 tracking-widest">Tactical_Dashboard</h3>
+            <p class="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-widest opacity-60">Real-time signal monitoring and academic data relays for both units and commanders.</p>
+        </div>
+        <div class="p-10 border-r border-black/5 group hover:bg-white transition-all">
+            <span class="text-[8px] text-red-500 font-bold tracking-widest block mb-4 uppercase">MODULE_02</span>
+            <h3 class="font-[Orbitron] text-xs font-black uppercase mb-4 tracking-widest">Signal_Briefings</h3>
+            <p class="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-widest opacity-60">Encrypted live-stream corridors for instant tactical knowledge transfer.</p>
+        </div>
+        <div class="p-10 group hover:bg-white transition-all">
+            <span class="text-[8px] text-red-500 font-bold tracking-widest block mb-4 uppercase">MODULE_03</span>
+            <h3 class="font-[Orbitron] text-xs font-black uppercase mb-4 tracking-widest">Auth_Registry</h3>
+            <p class="text-[10px] text-gray-400 font-bold uppercase leading-relaxed tracking-widest opacity-60">Secure identity management with high-density student provisioning protocols.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="p-8 border-t border-black/5 text-[9px] text-gray-400 font-bold uppercase tracking-[0.4em] flex justify-between bg-white/50 backdrop-blur-md">
+      <span>© 2026 GURUKUL_SYSTEMS_CORE</span>
+      <div class="flex gap-8">
+        <span>S_PANDIT</span>
+        <span>S_RANE</span>
+        <span>S_PAWAR</span>
       </div>
-
-      <div class="absolute top-10 right-10 text-red-500 text-xl">✱</div>
-
-      <div class="grid md:grid-cols-2">
-
-        <div class="p-6 border-r border-gray-300">
-          <p class="text-xl mb-4">
-            The future of learning through collaboration.
-          </p>
-          <p class="text-gray-500 text-sm">
-            A smart LMS platform for students and teachers to connect, manage, and grow together.
-          </p>
-        </div>
-
-        <div class="bg-red-500 text-white p-6 flex items-center justify-center"
-             style="clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);">
-          <h2 class="text-lg tracking-wide">
-            LEARN / CONNECT / GROW
-          </h2>
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- FEATURES -->
-    <section class="border-b border-gray-300">
-
-      <div class="border-b border-gray-300 p-6">
-        <h2 class="font-[Orbitron] text-3xl tracking-widest">
-          FEATURES
-        </h2>
-      </div>
-
-      <div class="grid md:grid-cols-2 lg:grid-cols-3">
-
-        <div class="border-r border-b border-gray-300 p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Attendance</h3>
-          <p class="text-gray-600 text-sm">Track attendance digitally.</p>
-        </div>
-
-        <div class="border-r border-b border-gray-300 p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Dashboard</h3>
-          <p class="text-gray-600 text-sm">View academic progress.</p>
-        </div>
-
-        <div class="border-b border-gray-300 p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Social Platform</h3>
-          <p class="text-gray-600 text-sm">Collaborate with peers.</p>
-        </div>
-
-        <div class="border-r border-gray-300 p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Collaboration</h3>
-          <p class="text-gray-600 text-sm">Work together efficiently.</p>
-        </div>
-
-        <div class="border-r border-gray-300 p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Records</h3>
-          <p class="text-gray-600 text-sm">Manage student data.</p>
-        </div>
-
-        <div class="p-6 hover:bg-gray-100 transition">
-          <h3 class="text-lg mb-2">Expansion</h3>
-          <p class="text-gray-600 text-sm">Future AI features.</p>
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- CTA -->
-    <section class="border-b border-gray-300">
-
-      <div class="grid md:grid-cols-2">
-
-        <div class="p-10 border-r border-gray-300">
-          <h2 class="font-[Orbitron] text-2xl mb-4">
-            JOIN GURUKUL
-          </h2>
-
-          <p class="text-gray-600 mb-6">
-            Start your learning journey today.
-          </p>
-
-          <a href="login.jsp" class="bg-red-500 text-white px-6 py-2 hover:bg-red-600 transition">
-            GET STARTED
-          </a>
-        </div>
-
-        <div class="bg-black text-white flex items-center justify-center p-10">
-          <h2 class="text-sm tracking-widest">
-            CONNECT / LEARN / EVOLVE
-          </h2>
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="p-6 border-t border-gray-300 text-sm text-gray-600 flex justify-between">
-      <span>© 2026 Gurukul LMS</span>
-      <span>ShriyashP | SahilR | SandeshP</span>
     </footer>
-
   </div>
 
-  <!-- TYPE LOOP SCRIPT -->
   <script>
     const text = "GURUKUL";
     let index = 0;
-    let isDeleting = false;
-
-    function typeLoop() {
-      const element = document.getElementById("heroText");
-
-      if (!isDeleting) {
-        element.innerHTML = text.substring(0, index + 1);
-        index++;
+    function type() {
+      if (index < text.length) {
+        document.getElementById("heroText").innerHTML += text.charAt(index++);
+        setTimeout(type, 150);
       } else {
-        element.innerHTML = text.substring(0, index - 1);
-        index--;
+        setTimeout(() => { document.getElementById("cursor").style.display = "none"; }, 2000);
       }
-
-      if (index === text.length) {
-        isDeleting = true;
-        setTimeout(typeLoop, 1200);
-        return;
-      }
-
-      if (index === 0) {
-        isDeleting = false;
-      }
-
-      let speed = isDeleting 
-        ? Math.random() * 60 + 80
-        : Math.random() * 100 + 150;
-
-      setTimeout(typeLoop, speed);
     }
+    window.onload = type;
 
-    window.onload = typeLoop;
-  </script>
-
-  <!-- 🔥 PHYSICS PARTICLE SYSTEM -->
-  <script>
     const canvas = document.getElementById("particleCanvas");
     const ctx = canvas.getContext("2d");
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    let mouse = { x: null, y: null };
-
-    window.addEventListener("mousemove", (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-
-    window.addEventListener("resize", () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      init();
-    });
-
-    class Particle {
-      constructor(x, y) {
-        this.baseX = x;
-        this.baseY = y;
-        this.x = x;
-        this.y = y;
-        this.vx = 0;
-        this.vy = 0;
-      }
-
+    class P {
+      constructor(x, y) { this.bx = x; this.by = y; this.x = x; this.y = y; this.vx = 0; this.vy = 0; }
       update() {
-        let dx = this.x - mouse.x;
-        let dy = this.y - mouse.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
-
-        let maxDist = 80;
-
-        if (dist < maxDist) {
-          let force = (maxDist - dist) / maxDist;
-          let angle = Math.atan2(dy, dx);
-          this.vx += Math.cos(angle) * force * 2;
-          this.vy += Math.sin(angle) * force * 2;
-        }
-
-        // spring back
-        this.vx += (this.baseX - this.x) * 0.05;
-        this.vy += (this.baseY - this.y) * 0.05;
-
-        // friction
-        this.vx *= 0.85;
-        this.vy *= 0.85;
-
-        this.x += this.vx;
-        this.y += this.vy;
+        let dx = this.x - mx, dy = this.y - my, d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 80) { let f = (80-d)/80, a = Math.atan2(dy, dx); this.vx += Math.cos(a)*f*2; this.vy += Math.sin(a)*f*2; }
+        this.vx += (this.bx-this.x)*0.05; this.vy += (this.by-this.y)*0.05;
+        this.vx *= 0.85; this.vy *= 0.85; this.x += this.vx; this.y += this.vy;
       }
-
-      draw() {
-        ctx.fillStyle = "rgba(0,0,0,0.25)";
-        ctx.fillRect(this.x, this.y, 2, 2);
-      }
+      draw() { ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(this.x, this.y, 2, 2); }
     }
-
-    let particles = [];
-
-    function init() {
-      particles = [];
-      let gap = 40;
-
-      for (let x = 0; x < canvas.width; x += gap) {
-        for (let y = 0; y < canvas.height; y += gap) {
-          particles.push(new Particle(x, y));
-        }
-      }
+    let ps = [], mx = -100, my = -100;
+    window.addEventListener("mousemove", (e) => { mx = e.clientX; my = e.clientY; });
+    for (let x = 0; x < canvas.width; x += 40) for (let y = 0; y < canvas.height; y += 40) ps.push(new P(x, y));
+    function anim() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ps.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(anim);
     }
-
-    init();
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-
-      requestAnimationFrame(animate);
-    }
-
-    animate();
+    anim();
   </script>
-
 </body>
 </html>

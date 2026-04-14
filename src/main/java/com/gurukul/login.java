@@ -61,7 +61,6 @@ public class login extends HttpServlet {
 
                     HttpSession session = request.getSession();
                     session.setAttribute("user", user);
-                    session.setAttribute("username", user.getUserName());
 
                     if ("Teacher".equalsIgnoreCase(user.getRole())) {
                         response.sendRedirect("teacherDashboard.jsp");
