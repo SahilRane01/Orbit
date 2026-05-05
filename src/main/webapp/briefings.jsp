@@ -65,22 +65,79 @@
     <div class="flex flex-grow overflow-hidden relative z-10">
         <!-- SIDEBAR -->
         <aside id="sidebar-module" class="fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 flex flex-col h-full py-6 pr-4 transition-all duration-500 group/sidebar w-64 md:w-20 hover:md:w-64 bg-white/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none">
+            <div class="connector-line left-[39px] md:group-hover/sidebar:left-[47px] hidden md:block"></div>
             <div class="glass h-full border-r md:border border-black/10 flex flex-col py-10 overflow-hidden relative shadow-2xl bg-white/95">
                 <div class="w-full flex md:flex-col items-center md:items-start transition-all duration-500 px-6 md:px-0 md:group-hover/sidebar:px-8 relative z-10 md:justify-center">
-                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 cursor-pointer" onclick="location.href='dashboard.jsp'">GKL</div>
+                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20 cursor-pointer" onclick="location.href='<%= isTeacher ? "teacherDashboard.jsp" : "dashboard.jsp" %>'">GKL</div>
                 </div>
                 <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch overflow-y-auto scrollbar-hide">
-                    <a href="<%= isTeacher ? "teacherDashboard.jsp" : "dashboard.jsp" %>" class="group/item flex items-center gap-4 p-4 hover:bg-black/5 w-full">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Console</span>
-                    </a>
-                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
-                        <i data-lucide="video" class="w-5 h-5 text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Briefings</span>
-                    </a>
+                    <% if (isTeacher) { %>
+                        <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Dashboard</span>
+                        </a>
+                        <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                        </a>
+                        <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
+                            <i data-lucide="video" class="w-5 h-5 text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Sessions</span>
+                        </a>
+                        <a href="markAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="clipboard-check" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Attendance</span>
+                        </a>
+                        <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Reports</span>
+                        </a>
+                        <a href="createEvent.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="calendar" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[06]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Events</span>
+                        </a>
+                        <a href="sendNotice.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="megaphone" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[07]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Notices</span>
+                        </a>
+                    <% } else { %>
+                        <a href="dashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="home" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Dashboard</span>
+                        </a>
+                        <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                        </a>
+                        <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
+                            <i data-lucide="video" class="w-5 h-5 text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Sessions</span>
+                        </a>
+                        <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Attendance</span>
+                        </a>
+                        <a href="userProfile.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="user" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Profile</span>
+                        </a>
+                    <% } %>
                     <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-black/5 mt-auto w-full">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Deauth</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[99]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Logout</span>
                     </a>
                 </nav>
             </div>
@@ -89,9 +146,16 @@
         <!-- MAIN -->
         <main class="flex-grow overflow-y-auto p-10 flex flex-col gap-10 scrollbar-hide">
             <header>
-                <h1 class="font-[Orbitron] text-4xl font-black tracking-tighter uppercase text-gray-900 mb-2">Signal<span class="text-red-500">_Briefings</span></h1>
-                <p class="text-[10px] text-gray-400 font-bold tracking-[0.3em] uppercase">Scheduled mission engagements and tactical knowledge relays</p>
+                <h1 class="font-[Orbitron] text-4xl font-black tracking-tighter uppercase text-gray-900 mb-2">Live<span class="text-red-500"> Sessions</span></h1>
+                <p class="text-[10px] text-gray-400 font-bold tracking-[0.3em] uppercase">Scheduled meetings and live knowledge sessions</p>
             </header>
+
+            <% if ("deleted".equals(request.getParameter("status"))) { %>
+            <div class="glass border-l-4 border-red-500 p-4 bg-red-500/5 flex items-center gap-4 animate-bounce">
+                <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-red-700">Session Deleted Successfully</span>
+            </div>
+            <% } %>
 
             <div class="grid grid-cols-12 gap-10">
                 <% if (isTeacher) { %>
@@ -100,20 +164,20 @@
                     <div class="glass p-10 relative overflow-hidden border-l-4 border-red-500 bg-white/50">
                         <div class="flex items-center gap-4 mb-8">
                             <i data-lucide="plus-circle" class="w-5 h-5 text-red-500"></i>
-                            <h2 class="font-[Orbitron] text-xs tracking-[0.4em] uppercase font-black">Plan_Future_Engagement</h2>
+                            <h2 class="font-[Orbitron] text-xs tracking-[0.4em] uppercase font-black">Schedule New Session</h2>
                         </div>
-                        <form action="meeting" method="post" class="grid grid-cols-12 gap-8 items-end">
-                            <input type="hidden" name="action" value="SCHEDULE">
+                        <form action="meetingAction" method="post" class="grid grid-cols-12 gap-8 items-end">
+                            <input type="hidden" name="action" value="SCHEDULE_MEETING">
                             <div class="col-span-12 md:col-span-6">
-                                <label class="label-tactical">Mission_Heading</label>
+                                <label class="label-tactical">Session Topic</label>
                                 <input type="text" name="heading" placeholder="OPERATIONAL_SYNC_V1" class="input-tactical" required>
                             </div>
                             <div class="col-span-12 md:col-span-4">
-                                <label class="label-tactical">Deployment_Coordinate (Date/Time)</label>
+                                <label class="label-tactical">Scheduled Time</label>
                                 <input type="datetime-local" name="scheduledTime" class="input-tactical" required>
                             </div>
                             <div class="col-span-12 md:col-span-2">
-                                <button type="submit" class="w-full bg-black text-white py-4 font-[Orbitron] text-[10px] tracking-[0.4em] font-black uppercase hover:bg-red-500 transition-all shadow-xl">Deploy</button>
+                                <button type="submit" class="w-full bg-black text-white py-4 font-[Orbitron] text-[10px] tracking-[0.4em] font-black uppercase hover:bg-red-500 transition-all shadow-xl">Schedule</button>
                             </div>
                         </form>
                     </div>
@@ -154,17 +218,26 @@
                                 <div><span class="label-tactical">Deployment</span><span class="text-[10px] font-bold text-gray-500 uppercase"><%= m.get("time").replace("T", " ") %></span></div>
                             </div>
 
-                            <div class="mt-auto pt-4">
+                             <div class="mt-auto pt-4">
                                 <% if (isTeacher) { %>
-                                    <% if (!isActive) { %>
-                                        <form action="meeting" method="post" class="w-full">
-                                            <input type="hidden" name="action" value="START">
+                                    <div class="flex gap-2">
+                                        <% if (!isActive) { %>
+                                            <form action="meetingAction" method="post" class="flex-grow">
+                                                <input type="hidden" name="action" value="START_MEETING">
+                                                <input type="hidden" name="meetingId" value="<%= m.get("meetId") %>">
+                                                <button class="w-full bg-black text-white py-3 text-[10px] font-[Orbitron] tracking-widest uppercase hover:bg-red-500 transition-all font-black">Go_Live</button>
+                                            </form>
+                                        <% } else { %>
+                                            <a href="meeting.jsp?id=<%= m.get("meetId") %>&room=<%= m.get("teacher") %>" class="block flex-grow bg-red-500 text-white text-center py-3 text-[10px] font-[Orbitron] tracking-widest uppercase hover:bg-black transition-all font-black shadow-lg">In_Progress</a>
+                                        <% } %>
+                                        <form action="meetingAction" method="post">
+                                            <input type="hidden" name="action" value="DELETE_MEETING">
                                             <input type="hidden" name="meetingId" value="<%= m.get("meetId") %>">
-                                            <button class="w-full bg-black text-white py-3 text-[10px] font-[Orbitron] tracking-widest uppercase hover:bg-red-500 transition-all font-black">Go_Live</button>
+                                            <button type="submit" class="bg-gray-100 text-gray-400 p-3 hover:bg-red-500 hover:text-white transition-all" title="Delete Mission">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
                                         </form>
-                                    <% } else { %>
-                                        <a href="meeting.jsp?id=<%= m.get("meetId") %>&room=<%= m.get("teacher") %>" class="block w-full bg-red-500 text-white text-center py-3 text-[10px] font-[Orbitron] tracking-widest uppercase hover:bg-black transition-all font-black shadow-lg">In_Progress</a>
-                                    <% } %>
+                                    </div>
                                 <% } else { %>
                                     <% if (isActive) { %>
                                         <a href="meeting.jsp?id=<%= m.get("meetId") %>&room=<%= m.get("teacher") %>" class="block w-full bg-black text-white text-center py-3 text-[10px] font-[Orbitron] tracking-widest uppercase hover:bg-red-500 transition-all font-black shadow-lg">Establish_Link</a>

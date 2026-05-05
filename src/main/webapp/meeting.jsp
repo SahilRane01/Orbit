@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Briefing_Room - <%= roomName %></title>
+    <title>Session Room - <%= roomName %></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -38,8 +38,8 @@
         <div class="flex items-center gap-6">
             <div class="w-10 h-10 bg-red-600 flex items-center justify-center font-[Orbitron] text-xs font-black text-white shadow-[0_0_25px_rgba(255,51,51,0.4)]">GKL</div>
             <div>
-                <h1 class="font-[Orbitron] text-xs tracking-[0.4em] font-black uppercase text-red-500">Briefing_Node: <%= roomName %></h1>
-                <p class="text-[8px] text-gray-500 tracking-[0.5em] font-bold mt-1 uppercase">Relay_ID: <%= meetingId %> // STATUS: SECURE_ALPHA</p>
+                <h1 class="font-[Orbitron] text-xs tracking-[0.4em] font-black uppercase text-red-500">Session Room: <%= roomName %></h1>
+                <p class="text-[8px] text-gray-500 tracking-[0.5em] font-bold mt-1 uppercase">Session_ID: <%= meetingId %> // STATUS: SECURE</p>
             </div>
         </div>
         <div class="flex items-center gap-8">
@@ -53,16 +53,16 @@
                 </div>
             </div>
             <% if (isTeacher) { %>
-            <form action="meeting" method="post">
-                <input type="hidden" name="action" value="END">
+            <form action="meetingAction" method="post">
+                <input type="hidden" name="action" value="END_MEETING">
                 <input type="hidden" name="meetingId" value="<%= meetingId %>">
                 <button type="submit" class="bg-red-600 text-white px-8 py-2.5 font-[Orbitron] text-[10px] tracking-[0.3em] font-black uppercase hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(255,51,51,0.2)] border border-transparent">
-                    Terminate_Relay
+                    End Session
                 </button>
             </form>
             <% } else { %>
             <a href="dashboard.jsp" class="bg-white/5 text-gray-400 px-8 py-2.5 font-[Orbitron] text-[10px] tracking-widest font-black uppercase hover:bg-white/10 transition-all border border-white/10">
-                Deauth_Node
+                Leave Session
             </a>
             <% } %>
         </div>
@@ -77,7 +77,7 @@
                 <div class="hud-scan"></div>
                 <!-- HUD -->
                 <div class="absolute top-4 left-6 py-1.5 px-4 bg-red-600/10 border-l-2 border-red-600 text-[8px] font-black tracking-[0.4em] text-red-500 uppercase">
-                    USER_FEED: <%= user.getFullName().toUpperCase() %>
+                    YOUR FEED: <%= user.getFullName().toUpperCase() %>
                 </div>
                 <div class="absolute bottom-4 right-6 text-[7px] font-mono text-white/10 tracking-widest uppercase">Node_Source_Prime</div>
             </div>
@@ -90,11 +90,11 @@
                         <i data-lucide="radio" class="w-12 h-12 text-red-600 animate-pulse"></i>
                         <div class="absolute inset-x-0 -bottom-2 h-0.5 bg-red-600/20 blur-sm"></div>
                     </div>
-                    <span class="text-[10px] font-black italic">Awaiting_Remote_Signal...</span>
+                    <span class="text-[10px] font-black italic">Waiting for someone to join...</span>
                 </div>
                 <div class="hud-scan"></div>
                 <div class="absolute top-4 left-6 py-1.5 px-4 bg-white/5 border-l-2 border-white/20 text-[8px] font-black tracking-[0.4em] text-white/40 uppercase">
-                    REMOTE_FEED: <%= isTeacher ? "STUDENT_UNIT" : "COMMANDER" %>
+                    PARTICIPANT FEED: <%= isTeacher ? "STUDENT" : "TEACHER" %>
                 </div>
             </div>
         </div>
@@ -114,14 +114,14 @@
         </button>
         
         <button id="start-hardware" class="hidden absolute bottom-24 bg-red-600 text-white px-10 py-4 font-[Orbitron] text-[11px] tracking-[0.4em] font-black uppercase hover:bg-black transition-all shadow-2xl border border-red-600/40">
-            Re-Initialize_Comms
+            Restart Camera/Mic
         </button>
     </div>
 
     <!-- SECURITY BYPASS MODAL -->
     <div id="security-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-8 backdrop-blur-2xl bg-black/80 font-[Inter]">
         <div class="glass max-w-xl w-full p-10 border-l-4 border-red-600 shadow-[0_0_100px_rgba(255,51,51,0.15)] relative">
-            <h2 class="font-[Orbitron] text-sm tracking-[0.5em] uppercase font-black text-red-500 mb-6 italic">Secure_Origin_Required</h2>
+            <h2 class="font-[Orbitron] text-sm tracking-[0.5em] uppercase font-black text-red-500 mb-6 italic">Security Settings Required</h2>
             <p class="text-[10px] text-gray-400 leading-relaxed mb-8 uppercase tracking-widest font-bold">
                 Hardware access is <span class="text-red-500 underline">DISABLED</span> for non-secure LAN origins. Execute the following override sequence:
             </p>

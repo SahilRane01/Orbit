@@ -1,5 +1,5 @@
-<%@ page import="java.sql.*, java.util.*, com.gurukul.*" %>
-<jsp:useBean id="user" class="com.gurukul.userProfileBean" scope="session" />
+<%@ page import="java.sql.*, java.util.*, com.gurukul.models.UserProfile, com.gurukul.utils.DBConnection" %>
+<jsp:useBean id="user" class="com.gurukul.models.UserProfile" scope="session" />
 <%
     if (session.getAttribute("user") == null || !"Teacher".equalsIgnoreCase(user.getRole())) {
         response.sendRedirect("login.jsp");
@@ -7,24 +7,17 @@
     }
 
     List<Map<String, String>> activeMeetings = new ArrayList<>();
-    try {
-        ServletContext context = getServletContext();
-        String DB = context.getInitParameter("DB_URL");
-        String DB_User = context.getInitParameter("DB_USERNAME");
-        String DB_pwd = context.getInitParameter("DB_PWD");
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://"+DB+":3306/gurukul", DB_User, DB_pwd);
-
+    try (Connection conn = DBConnection.getConnection(getServletContext())) {
         String meetSql = "SELECT * FROM meetings WHERE status = 'ACTIVE' ORDER BY created_at DESC";
-        PreparedStatement psMeet = conn.prepareStatement(meetSql);
-        ResultSet rsMeet = psMeet.executeQuery();
-        while (rsMeet.next()) {
-            Map<String, String> m = new HashMap<>();
-            m.put("id", rsMeet.getString("meeting_id"));
-            m.put("teacher", rsMeet.getString("teacher_name"));
-            activeMeetings.add(m);
+        try (PreparedStatement psMeet = conn.prepareStatement(meetSql);
+             ResultSet rsMeet = psMeet.executeQuery()) {
+            while (rsMeet.next()) {
+                Map<String, String> m = new HashMap<>();
+                m.put("id", rsMeet.getString("meeting_id"));
+                m.put("teacher", rsMeet.getString("teacher_name"));
+                activeMeetings.add(m);
+            }
         }
-        conn.close();
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -65,29 +58,60 @@
     <div class="flex flex-grow overflow-hidden relative z-10">
         <!-- SIDEBAR -->
         <aside id="sidebar-module" class="fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 flex flex-col h-full py-6 pr-4 transition-all duration-500 group/sidebar w-64 md:w-20 hover:md:w-64 bg-white/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none">
+            <div class="connector-line left-[39px] md:group-hover/sidebar:left-[47px] hidden md:block"></div>
             <div class="glass h-full border-r md:border border-black/10 flex flex-col py-10 overflow-hidden relative shadow-2xl bg-white/95">
                 <div class="w-full flex md:flex-col items-center md:items-start transition-all duration-500 px-6 md:px-0 md:group-hover/sidebar:px-8 relative z-10 md:justify-center">
-                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0">GKL</div>
+                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20 cursor-pointer" onclick="location.href='teacherDashboard.jsp'">GKL</div>
                 </div>
-                <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10">
-                    <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5">
+                <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch overflow-y-auto scrollbar-hide">
+                    <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Command</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Dashboard</span>
                     </a>
-                    <a href="createEvent.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5">
+                    <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                    </a>
+                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Sessions</span>
+                    </a>
+                    <a href="markAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Attendance</span>
+                    </a>
+                    <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Add Student</span>
+                    </a>
+                    <a href="createEvent.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="calendar" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[06]</span>
                         <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Events</span>
                     </a>
-                    <a href="sendNotice.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5">
+                    <a href="sendNotice.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="megaphone" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[07]</span>
                         <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Notices</span>
                     </a>
-                    <a href="createStudent.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500">
+                    <a href="createStudent.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
                         <i data-lucide="user-plus" class="w-5 h-5 text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Deploy_Unit</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[08]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Add Student</span>
                     </a>
-                    <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 mt-auto">
+                    <a href="teacherDashboard.jsp#leave-management" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="clipboard-list" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[09]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Leave Request</span>
+                    </a>
+                    <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-black/5 mt-auto w-full">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[99]</span>
                         <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Logout</span>
                     </a>
                 </nav>
@@ -98,8 +122,8 @@
         <main class="flex-grow overflow-y-auto p-10 flex flex-col gap-10 scrollbar-hide">
             <div class="flex justify-between items-start">
                 <div>
-                    <h1 class="font-[Orbitron] text-4xl font-black tracking-tighter uppercase text-gray-900 mb-2">Unit_Deployment</h1>
-                    <p class="text-[10px] text-gray-400 font-bold tracking-[0.3em] uppercase">Provisioning new learner profiles for the Gurukul network</p>
+                    <h1 class="font-[Orbitron] text-4xl font-black tracking-tighter uppercase text-gray-900 mb-2">Add Student</h1>
+                    <p class="text-[10px] text-gray-400 font-bold tracking-[0.3em] uppercase">Create a new student profile for the Gurukul platform</p>
                 </div>
             </div>
 
@@ -107,7 +131,7 @@
                 <div class="glass p-10 border-l-4 border-red-500 relative overflow-hidden">
                     <div class="flex items-center gap-4 mb-12">
                         <i data-lucide="database" class="w-5 h-5 text-red-500"></i>
-                        <h2 class="font-[Orbitron] text-xs tracking-[0.4em] uppercase font-bold text-gray-900">Unit_Data_Entry</h2>
+                        <h2 class="font-[Orbitron] text-xs tracking-[0.4em] uppercase font-bold text-gray-900">Student Information</h2>
                     </div>
 
                     <form action="teacherAction" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">

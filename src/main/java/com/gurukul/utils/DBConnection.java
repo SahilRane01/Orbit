@@ -23,6 +23,6 @@ public class DBConnection {
      */
     public static Connection getManualConnection() throws SQLException, ClassNotFoundException {
         Class.forName(DRIVER);
-        return DriverManager.getConnection("jdbc:mysql://10.187.73.231:3306/gurukul", "root", "Admin");
+        return DriverManager.getConnection("jdbc:mysql://192.168.0.105:3306/gurukul", "root", "Admin");
     }
 }

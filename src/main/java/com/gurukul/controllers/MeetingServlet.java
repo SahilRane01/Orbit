@@ -72,6 +72,15 @@ public class MeetingServlet extends HttpServlet {
                     ps.executeUpdate();
                 }
                 response.sendRedirect("teacherDashboard.jsp");
+            } else if ("DELETE_MEETING".equals(action)) {
+                String meetingId = request.getParameter("meetingId");
+                String sql = "DELETE FROM meetings WHERE meeting_id = ? AND teacher_id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, meetingId);
+                    ps.setInt(2, user.getId());
+                    ps.executeUpdate();
+                }
+                response.sendRedirect("briefings.jsp?status=deleted");
             }
         } catch (Exception e) {
             e.printStackTrace();

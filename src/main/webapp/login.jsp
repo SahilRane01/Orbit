@@ -15,7 +15,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authorize - Gurukul ILE</title>
+    <title>Login - Gurukul ILE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -34,9 +34,9 @@
     <div class="relative z-50 border-b border-black/5 px-6 py-2 flex justify-between items-center text-[9px] text-gray-400 bg-white/80 backdrop-blur-md uppercase tracking-[0.3em] font-bold">
         <div class="flex items-center gap-4">
             <span class="text-red-500 animate-pulse">&#10033;</span>
-            <span>GURUKUL_ILE / AUTH_GATEWAY</span>
+            <span>GURUKUL_ILE / AUTHENTICATION</span>
         </div>
-        <a href="index.jsp" class="hover:text-red-500 transition-colors">TERMINATE_PROCESS</a>
+        <a href="index.jsp" class="hover:text-red-500 transition-colors">BACK TO HOME</a>
     </div>
 
     <div class="flex-grow flex items-center justify-center p-6 relative z-10">
@@ -46,12 +46,12 @@
             <% if ("registered".equals(status)) { %>
                 <div class="glass border-l-4 border-green-500 p-4 mb-6 bg-green-500/5 flex items-center gap-4 animate-bounce">
                     <i data-lucide="shield-check" class="w-5 h-5 text-green-500"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-green-700">Identity_Provisioned: Please_Authorize</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-green-700">Account Created: Please Login</span>
                 </div>
             <% } else if ("loggedout".equals(status)) { %>
                 <div class="glass border-l-4 border-red-500 p-4 mb-6 bg-red-500/5 flex items-center gap-4">
                     <i data-lucide="log-out" class="w-5 h-5 text-red-500"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-red-700">Signal_Terminated: Session_Invalidated</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-red-700">Logged Out: Session Ended</span>
                 </div>
             <% } %>
 
@@ -59,7 +59,7 @@
                 <div class="bg-black p-8 text-center text-white relative">
                     <div class="absolute top-0 right-0 p-4 text-[8px] font-mono opacity-20">V5.0_CORE</div>
                     <h1 class="font-[Orbitron] text-2xl tracking-[0.4em] font-black uppercase">Authorize</h1>
-                    <p class="text-[8px] text-gray-500 tracking-[0.6em] mt-2 font-bold uppercase">Gurukul Neural Interface</p>
+                    <p class="text-[8px] text-gray-500 tracking-[0.6em] mt-2 font-bold uppercase">Gurukul Learning Environment</p>
                 </div>
 
                 <div class="flex border-b border-black/5 font-[Orbitron] text-[9px] font-black tracking-widest">
@@ -71,33 +71,33 @@
                     <!-- LOGIN FORM -->
                     <form id="loginForm" action="login" method="post" class="space-y-8">
                         <div>
-                            <label class="label-tactical">Auth_ID / Username</label>
-                            <input type="text" name="username" placeholder="USER_ALPHA" class="input-tactical" required>
+                            <label class="label-tactical">Username</label>
+                            <input type="text" name="username" placeholder="your_username" class="input-tactical" required>
                         </div>
                         <div>
-                            <label class="label-tactical">Access_Cipher</label>
+                            <label class="label-tactical">Password</label>
                             <input type="password" name="password" placeholder="••••••••" class="input-tactical" required>
                         </div>
                         <button type="submit" class="w-full bg-red-500 text-white py-4 font-[Orbitron] text-[11px] tracking-[0.4em] font-black uppercase hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
-                            <i data-lucide="key" class="w-4 h-4"></i> Establish_Link
+                            <i data-lucide="key" class="w-4 h-4"></i> Login
                         </button>
                     </form>
 
                     <!-- REGISTRATION FORM -->
                     <form id="regForm" action="registration" method="post" class="hidden space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="label-tactical">Full_Name</label><input type="text" name="full_name" class="input-tactical" required></div>
-                            <div><label class="label-tactical">Auth_ID</label><input type="text" name="username" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Full Name</label><input type="text" name="full_name" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Username</label><input type="text" name="username" class="input-tactical" required></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="label-tactical">Relay_Email</label><input type="email" name="email" class="input-tactical" required></div>
-                            <div><label class="label-tactical">Comms_Ph</label><input type="text" name="phone" class="input-tactical"></div>
+                            <div><label class="label-tactical">Email</label><input type="email" name="email" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Phone Number</label><input type="text" name="phone" class="input-tactical"></div>
                         </div>
                         <div>
-                            <label class="label-tactical">Assigned_Role</label>
+                            <label class="label-tactical">Select Role</label>
                             <select name="role" class="input-tactical">
-                                <option value="Student">STUDENT_UNIT</option>
-                                <option value="Teacher">FACULTY_COMMANDER</option>
+                                <option value="Student">Student</option>
+                                <option value="Teacher">Teacher</option>
                             </select>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
@@ -106,11 +106,11 @@
                             <div><label class="label-tactical">Spec.</label><input type="text" name="specialization" class="input-tactical"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="label-tactical">Cipher</label><input type="password" name="password" class="input-tactical" required></div>
-                            <div><label class="label-tactical">Confirm</label><input type="password" name="cpassword" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Password</label><input type="password" name="password" class="input-tactical" required></div>
+                            <div><label class="label-tactical">Confirm Password</label><input type="password" name="cpassword" class="input-tactical" required></div>
                         </div>
                         <button type="submit" class="w-full bg-black text-white py-4 font-[Orbitron] text-[11px] tracking-[0.4em] font-black uppercase hover:bg-red-500 transition-all shadow-xl flex items-center justify-center gap-3">
-                            <i data-lucide="shield-plus" class="w-4 h-4"></i> Provision_ID
+                            <i data-lucide="shield-plus" class="w-4 h-4"></i> Register
                         </button>
                     </form>
                 </div>

@@ -8,7 +8,13 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.*;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import jakarta.servlet.annotation.MultipartConfig;
+
 @WebServlet("/teacherAction")
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 10, maxRequestSize = 1024 * 1024 * 20)
 public class TeacherController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -85,6 +91,70 @@ public class TeacherController extends HttpServlet {
                     ps.setString(7, specialization);
                     ps.setString(8, password);
                     ps.executeUpdate();
+                }
+            } else if ("UPDATE_STUDENT".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String fullname = request.getParameter("full_name");
+                String username = request.getParameter("username");
+                String email = request.getParameter("email");
+                String phone = request.getParameter("phone");
+                String course = request.getParameter("course");
+                String batch = request.getParameter("batch");
+                String specialization = request.getParameter("specialization");
+                String password = request.getParameter("password");
+
+                String sql = "UPDATE users SET full_name = ?, username = ?, email = ?, phone = ?, course = ?, batch = ?, specialization = ?" + 
+                             (password != null && !password.isEmpty() ? ", password = ?" : "") + 
+                             " WHERE id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    ps.setString(1, fullname);
+                    ps.setString(2, username);
+                    ps.setString(3, email);
+                    ps.setString(4, phone);
+                    ps.setString(5, course);
+                    ps.setString(6, batch);
+                    ps.setString(7, specialization);
+                    if (password != null && !password.isEmpty()) {
+                        ps.setString(8, password);
+                        ps.setInt(9, id);
+                    } else {
+                        ps.setInt(8, id);
+                    }
+                    ps.executeUpdate();
+                }
+            } else if ("BULK_UPLOAD_STUDENTS".equals(action)) {
+                Part filePart = request.getPart("file");
+                if (filePart != null) {
+                    try (InputStream fileContent = filePart.getInputStream();
+                         BufferedReader reader = new BufferedReader(new InputStreamReader(fileContent))) {
+                        
+                        String line;
+                        boolean isHeader = true;
+                        String sql = "INSERT INTO users (full_name, username, email, phone, role, course, batch, specialization, password) VALUES (?, ?, ?, ?, 'Student', ?, ?, ?, ?)";
+                        
+                        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                            while ((line = reader.readLine()) != null) {
+                                if (isHeader) {
+                                    isHeader = false;
+                                    continue; // Skip header
+                                }
+                                
+                                String[] data = line.split(",", -1);
+                                if (data.length >= 8) {
+                                    ps.setString(1, data[0].trim()); // full_name
+                                    ps.setString(2, data[1].trim()); // username
+                                    ps.setString(3, data[2].trim()); // email
+                                    ps.setString(4, data[3].trim()); // phone
+                                    ps.setString(5, data[4].trim()); // course
+                                    ps.setString(6, data[5].trim()); // batch
+                                    ps.setString(7, data[6].trim()); // specialization
+                                    ps.setString(8, data[7].trim()); // password
+                                    ps.addBatch();
+                                }
+                            }
+                            ps.executeBatch();
+                        }
+                    }
                 }
             }
             

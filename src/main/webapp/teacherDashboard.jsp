@@ -10,6 +10,7 @@
     Set<String> uniqueStreams = new TreeSet<>();
     List<Map<String, String>> activeMeetings = new ArrayList<>();
     List<Map<String, String>> pendingLeaves = new ArrayList<>();
+    List<Map<String, String>> myQuizzes = new ArrayList<>();
 
     try (Connection conn = DBConnection.getConnection(getServletContext())) {
         // Fetch Students with COMPLETE details
@@ -57,6 +58,27 @@
                 pendingLeaves.add(l);
             }
         }
+
+        // Fetch Recent Quizzes Created by this Teacher
+        String quizSql = "SELECT q.id, q.title, c.name as class_name, c.id as class_id, q.created_at, " +
+                         "(SELECT COUNT(*) FROM quiz_submissions qs WHERE qs.quiz_id = q.id) as sub_count " +
+                         "FROM quizzes q " +
+                         "JOIN classes c ON q.class_id = c.id " +
+                         "WHERE c.teacher_id = ? ORDER BY q.created_at DESC LIMIT 5";
+        try (PreparedStatement psQz = conn.prepareStatement(quizSql)) {
+            psQz.setInt(1, user.getId());
+            try (ResultSet rsQz = psQz.executeQuery()) {
+                while (rsQz.next()) {
+                    Map<String, String> q = new HashMap<>();
+                    q.put("id", rsQz.getString("id"));
+                    q.put("title", rsQz.getString("title"));
+                    q.put("class_name", rsQz.getString("class_name"));
+                    q.put("class_id", rsQz.getString("class_id"));
+                    q.put("sub_count", rsQz.getString("sub_count"));
+                    myQuizzes.add(q);
+                }
+            }
+        }
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -66,7 +88,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Command Console - Gurukul ILE</title>
+    <title>Teacher Dashboard - Gurukul ILE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -94,9 +116,9 @@
                 <i data-lucide="menu" class="w-5 h-5"></i>
             </button>
             <span class="text-red-500 animate-pulse">&#10033;</span>
-            <span>GURUKUL_ILE / FACULTY_COMMAND_CENTER</span>
+            <span>GURUKUL_ILE / TEACHER_DASHBOARD</span>
             <span class="opacity-30 mx-2">|</span>
-            <span class="text-[7px] text-red-500/80 tracking-widest uppercase">SIG_STRENGTH: <%= activeMeetings.size() > 0 ? "98%" : "0%" %> [SIGNALS: <%= activeMeetings.size() %>]</span>
+            <span class="text-[7px] text-red-500/80 tracking-widest uppercase">STATUS: <%= activeMeetings.size() > 0 ? "ONLINE" : "IDLE" %> [ACTIVE SESSIONS: <%= activeMeetings.size() %>]</span>
         </div>
         <div class="flex items-center gap-6">
             <span class="hidden md:inline text-gray-300">HUB_DATA_STREAM: ACTIVE</span>
@@ -113,36 +135,56 @@
                     <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20">GKL</div>
                 </div>
                 <!-- NAV -->
-                <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch">
+                <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch overflow-y-auto scrollbar-hide">
                     <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
                         <i data-lucide="layout-dashboard" class="w-5 h-5 text-red-500"></i>
                         <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Command</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Dashboard</span>
+                    </a>
+                    <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                    </a>
+                    <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Sessions</span>
+                    </a>
+                    <a href="markAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="clipboard-check" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-gray-400 group-hover:text-red-500">Attendance</span>
+                    </a>
+                    <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Reports</span>
                     </a>
                     <a href="createEvent.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="calendar" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[06]</span>
                         <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Events</span>
                     </a>
                     <a href="sendNotice.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="megaphone" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[07]</span>
                         <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Notices</span>
                     </a>
                     <a href="javascript:void(0)" onclick="openDeployModal()" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="user-plus" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Deploy_Unit</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[08]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Add Student</span>
                     </a>
                     <a href="#leave-management" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
                         <i data-lucide="clipboard-list" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Leave_Ops</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[09]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Leave Request</span>
                     </a>
                     <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full mt-auto">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
                         <span class="terminal-index hidden md:group-hover/sidebar:block">[99]</span>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Deauth</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Logout</span>
                     </a>
                 </nav>
             </div>
@@ -184,43 +226,43 @@
             <!-- SECTION 1: FACULTY PERSONA -->
             <section class="grid grid-cols-12 gap-8">
                 <div class="col-span-12 xl:col-span-5 glass p-8 border-l-4 border-black relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-4 opacity-5 text-[10px] font-mono">FACULTY_PROFILE_V5</div>
+                    <div class="absolute top-0 right-0 p-4 opacity-5 text-[10px] font-mono">Teacher Profile</div>
                     <div class="flex items-center gap-8 mb-8">
                         <div class="w-20 h-20 bg-white border border-black/5 flex items-center justify-center shadow-inner relative">
                             <i data-lucide="user" class="w-10 h-10 text-red-500"></i>
                         </div>
                         <div class="flex flex-col gap-1">
                             <h2 class="font-[Orbitron] text-2xl tracking-[0.1em] font-black uppercase text-gray-900 leading-none">${user.fullName}</h2>
-                            <span class="text-[10px] text-red-500 font-bold tracking-[0.5em] uppercase">Authorized_Personnel</span>
+                            <span class="text-[10px] text-red-500 font-bold tracking-[0.5em] uppercase">Authorized Faculty</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-6 border-t border-black/5 pt-6">
                         <div>
-                            <span class="text-[7px] text-gray-400 font-bold tracking-[0.4em] uppercase block mb-1">Assigned_Dept</span>
+                            <span class="text-[7px] text-gray-400 font-bold tracking-[0.4em] uppercase block mb-1">Department</span>
                             <span class="text-[10px] font-bold text-gray-900 font-[Orbitron]">${user.course}</span>
                         </div>
                         <div>
-                            <span class="text-[7px] text-gray-400 font-bold tracking-[0.4em] uppercase block mb-1">Comms_Relay</span>
+                            <span class="text-[7px] text-gray-400 font-bold tracking-[0.4em] uppercase block mb-1">Email Address</span>
                             <span class="text-[10px] font-bold text-gray-900 font-mono">${user.email}</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="col-span-12 xl:col-span-7 flex flex-col justify-between p-8 bg-red-500 text-white shadow-[0_20px_40px_rgba(255,51,51,0.1)] relative">
-                    <div class="absolute top-4 right-6 text-[40px] font-black opacity-10 font-[Orbitron]">SYSTEM_ACTIVE</div>
+                    <div class="absolute top-4 right-6 text-[40px] font-black opacity-10 font-[Orbitron]">Dashboard Active</div>
                     <div class="relative z-10">
-                        <h3 class="font-[Orbitron] text-sm tracking-[0.2em] font-bold mb-2 uppercase">Command_Status</h3>
-                        <p class="text-[10px] tracking-[0.1em] opacity-80 uppercase leading-loose border-l-2 border-white/50 pl-4 py-2">Architecture optimized. Modular controllers active. Access authorized via endpoint <span class="underline">ALPHA_CORE</span>.</p>
+                        <h3 class="font-[Orbitron] text-sm tracking-[0.2em] font-bold mb-2 uppercase">System Status</h3>
+                        <p class="text-[10px] tracking-[0.1em] opacity-80 uppercase leading-loose border-l-2 border-white/50 pl-4 py-2">System running smoothly. All modules active and authorized. Access granted.</p>
                     </div>
                     <div class="flex justify-between items-end mt-6 pt-4 border-t border-white/20 relative z-10 gap-8">
                         <div class="flex gap-10">
                             <div>
                                 <div class="text-[12px] font-black font-[Orbitron] uppercase"><%= students.size() %></div>
-                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Units_Managed</div>
+                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Students Managed</div>
                             </div>
                             <div>
                                 <div class="text-[12px] font-black font-[Orbitron] uppercase">99%</div>
-                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Sync_Rate</div>
+                                <div class="text-[7px] font-bold opacity-60 tracking-widest uppercase">Attendance Rate</div>
                             </div>
                         </div>
                         <div class="flex-grow max-w-[240px]">
@@ -238,13 +280,18 @@
 
             <!-- SECTION 2: STUDENT MANAGEMENT -->
             <section class="flex flex-col gap-6">
-                <!-- FILTER ARRAY -->
-                <div class="flex flex-wrap items-center gap-3 glass p-3 border-l-4 border-red-500">
-                    <div class="text-[8px] font-black uppercase text-gray-400 tracking-[0.4em] px-4 border-r border-black/10">Filter_Stream:</div>
-                    <button onclick="filterStudents('ALL')" id="filter-ALL" class="filter-btn active">All_Units</button>
-                    <% for(String stream : uniqueStreams) { %>
-                    <button onclick="filterStudents('<%= stream %>')" id="filter-<%= stream.replaceAll("\\s+", "_") %>" class="filter-btn"><%= stream %></button>
-                    <% } %>
+                <!-- FILTER ARRAY & SEARCH -->
+                <div class="flex flex-wrap items-center justify-between gap-3 glass p-3 border-l-4 border-red-500">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="text-[8px] font-black uppercase text-gray-400 tracking-[0.4em] px-4 border-r border-black/10">Filter_Stream:</div>
+                        <button onclick="filterStudents('ALL')" id="filter-ALL" class="filter-btn active">All_Units</button>
+                        <% for(String stream : uniqueStreams) { %>
+                        <button onclick="filterStudents('<%= stream %>')" id="filter-<%= stream.replaceAll("\\s+", "_") %>" class="filter-btn"><%= stream %></button>
+                        <% } %>
+                    </div>
+                    <div>
+                        <input type="text" id="search-student" onkeyup="applyFilters()" placeholder="SEARCH_BY_NAME..." class="input-tactical w-64 m-0 py-2 border-black/10">
+                    </div>
                 </div>
 
                 <div class="glass p-8 overflow-hidden flex flex-col relative min-h-[500px]">
@@ -253,9 +300,14 @@
                             <i data-lucide="users" class="w-4 h-4 text-red-500"></i>
                             <h2 class="font-[Orbitron] text-xs tracking-widest uppercase font-bold text-gray-900">Student_Registry</h2>
                         </div>
-                        <button onclick="openDeployModal()" class="bg-red-500 text-white px-4 py-2 font-[Orbitron] text-[8px] tracking-[0.2em] font-black uppercase hover:bg-black transition-all flex items-center gap-2">
-                            <i data-lucide="user-plus" class="w-3 h-3"></i> Initiate_New_Unit
-                        </button>
+                        <div class="flex gap-4">
+                            <button onclick="openBulkModal()" class="bg-black text-white px-4 py-2 font-[Orbitron] text-[8px] tracking-[0.2em] font-black uppercase hover:bg-red-500 transition-all flex items-center gap-2">
+                                <i data-lucide="upload-cloud" class="w-3 h-3"></i> Bulk_Import_Units
+                            </button>
+                            <button onclick="openDeployModal()" class="bg-red-500 text-white px-4 py-2 font-[Orbitron] text-[8px] tracking-[0.2em] font-black uppercase hover:bg-black transition-all flex items-center gap-2">
+                                <i data-lucide="user-plus" class="w-3 h-3"></i> Initiate_New_Unit
+                            </button>
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -285,12 +337,30 @@
                                             data-course="<%= s.getCourse() %>"
                                             data-batch="<%= s.getBatch() %>"
                                             data-spec="<%= s.getSpecialization() %>"
-                                            class="bg-black text-white px-3 py-1.5 hover:bg-red-500 transition-all uppercase text-[7px] tracking-widest">Scan_Data</button>
+                                            class="bg-black text-white px-3 py-1.5 hover:bg-red-500 transition-all uppercase text-[7px] tracking-widest">View Details</button>
+                                        <button onclick="openEditModal(this)" 
+                                            data-id="<%= s.getId() %>"
+                                            data-fullname="<%= s.getFullName() %>" 
+                                            data-username="<%= s.getUserName() %>"
+                                            data-email="<%= s.getEmail() %>"
+                                            data-phone="<%= s.getPhone() %>"
+                                            data-course="<%= s.getCourse() %>"
+                                            data-batch="<%= s.getBatch() %>"
+                                            data-spec="<%= s.getSpecialization() %>"
+                                            class="bg-red-500 text-white px-3 py-1.5 hover:bg-black transition-all uppercase text-[7px] tracking-widest">Edit Student</button>
                                     </td>
                                 </tr>
                                 <% } %>
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-4 border-t border-black/5 pt-6">
+                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest" id="page-info">Showing 0-0 of 0</div>
+                        <div class="flex gap-2">
+                            <button onclick="changePage(-1)" class="bg-black/5 hover:bg-black/10 text-gray-900 px-4 py-2 text-[9px] font-bold uppercase tracking-widest transition-colors"><i data-lucide="chevron-left" class="w-3 h-3 inline"></i> Prev</button>
+                            <button onclick="changePage(1)" class="bg-black/5 hover:bg-black/10 text-gray-900 px-4 py-2 text-[9px] font-bold uppercase tracking-widest transition-colors">Next <i data-lucide="chevron-right" class="w-3 h-3 inline"></i></button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -300,22 +370,22 @@
                 <div class="glass p-8 overflow-hidden flex flex-col relative min-h-[300px]">
                     <div class="flex items-center gap-3 mb-10">
                         <i data-lucide="clipboard-list" class="w-4 h-4 text-red-500"></i>
-                        <h2 class="font-[Orbitron] text-xs tracking-widest uppercase font-bold text-gray-900">Leave_Management_Queue</h2>
+                        <h2 class="font-[Orbitron] text-xs tracking-widest uppercase font-bold text-gray-900">Leave Requests</h2>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-black/5 text-[9px] text-gray-400 tracking-widest uppercase font-black bg-black/[0.02]">
-                                    <th class="py-4 px-6">Source_Unit</th>
+                                    <th class="py-4 px-6">Student Name</th>
                                     <th class="py-4">Reason</th>
-                                    <th class="py-4">Temporal_Range</th>
-                                    <th class="py-4 text-right pr-6">Command_Action</th>
+                                    <th class="py-4">Duration</th>
+                                    <th class="py-4 text-right pr-6">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="text-[10px] font-bold">
                                 <% if (pendingLeaves.isEmpty()) { %>
-                                    <tr><td colspan="4" class="py-12 text-center text-gray-300 uppercase tracking-widest">Queue_Empty: No_Pending_Requests</td></tr>
+                                    <tr><td colspan="4" class="py-12 text-center text-gray-300 uppercase tracking-widest">No Pending Requests</td></tr>
                                 <% } else { for(Map<String, String> l : pendingLeaves) { %>
                                 <tr class="border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors">
                                     <td class="py-5 px-6 uppercase tracking-tighter text-gray-900 font-[Orbitron] text-[11px]"><%= l.get("student_name") %></td>
@@ -327,7 +397,7 @@
                                                 <input type="hidden" name="action" value="UPDATE_LEAVE_STATUS">
                                                 <input type="hidden" name="id" value="<%= l.get("id") %>">
                                                 <input type="hidden" name="status" value="APPROVED">
-                                                <button type="submit" class="bg-green-500 text-white px-3 py-1.5 hover:bg-black transition-all uppercase text-[7px] tracking-widest">Authorize</button>
+                                                <button type="submit" class="bg-green-500 text-white px-3 py-1.5 hover:bg-black transition-all uppercase text-[7px] tracking-widest">Approve</button>
                                             </form>
                                             <form action="leaveAction" method="post" class="inline">
                                                 <input type="hidden" name="action" value="UPDATE_LEAVE_STATUS">
@@ -344,6 +414,43 @@
                     </div>
                 </div>
             </section>
+
+            <!-- SECTION 4: RECENT QUIZZES -->
+            <section id="quiz-management" class="flex flex-col gap-6">
+                <div class="glass p-8 overflow-hidden flex flex-col relative min-h-[300px] border-l-4 border-black">
+                    <div class="flex items-center gap-3 mb-10">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-gray-900"></i>
+                        <h2 class="font-[Orbitron] text-xs tracking-widest uppercase font-bold text-gray-900">Recent Quizzes</h2>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-black/5 text-[9px] text-gray-400 tracking-widest uppercase font-black bg-black/[0.02]">
+                                    <th class="py-4 px-6">Quiz Title</th>
+                                    <th class="py-4">Class</th>
+                                    <th class="py-4 text-center">Submissions</th>
+                                    <th class="py-4 text-right pr-6">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-[10px] font-bold">
+                                <% if (myQuizzes.isEmpty()) { %>
+                                    <tr><td colspan="4" class="py-12 text-center text-gray-300 uppercase tracking-widest">No Quizzes Created</td></tr>
+                                <% } else { for(Map<String, String> q : myQuizzes) { %>
+                                <tr class="border-b border-black/[0.03] hover:bg-black/[0.01] transition-colors cursor-pointer" onclick="location.href='quizResult.jsp?id=<%= q.get("id") %>&class_id=<%= q.get("class_id") %>'">
+                                    <td class="py-5 px-6 uppercase tracking-tighter text-gray-900 font-[Orbitron] text-[11px]"><%= q.get("title") %></td>
+                                    <td class="py-5 text-gray-500 uppercase"><%= q.get("class_name") %></td>
+                                    <td class="py-5 text-center font-mono text-[10px] text-gray-900"><%= q.get("sub_count") %></td>
+                                    <td class="py-5 text-right pr-6">
+                                        <button class="bg-red-500 text-white px-3 py-1.5 hover:bg-black transition-all uppercase text-[7px] tracking-widest">View Results</button>
+                                    </td>
+                                </tr>
+                                <% } } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -352,7 +459,7 @@
         <div class="absolute inset-0 bg-white/80 backdrop-blur-md" onclick="closeModal()"></div>
         <div class="glass max-w-2xl w-full p-0 relative border border-black/10 shadow-2xl">
             <div class="bg-red-500 px-8 py-4 flex justify-between items-center text-white">
-                <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Scanning_Result</h2>
+                <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Student Details</h2>
                 <button onclick="closeModal()"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
             <div class="p-10" id="modal-content"></div>
@@ -366,7 +473,7 @@
             <div class="bg-black px-8 py-4 flex justify-between items-center text-white">
                 <div class="flex items-center gap-3">
                     <i data-lucide="user-plus" class="w-4 h-4 text-red-500"></i>
-                    <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Unit_Provisioning_Terminal</h2>
+                    <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Add New Student</h2>
                 </div>
                 <button onclick="closeDeployModal()"><i data-lucide="x" class="w-4 h-4 text-gray-400"></i></button>
             </div>
@@ -389,12 +496,20 @@
                         <input type="email" name="email" placeholder="UNIT@GURUKUL.EDU" class="input-tactical" required>
                     </div>
                     <div>
+                        <label class="label-tactical">Phone</label>
+                        <input type="text" name="phone" placeholder="+91 XXXX XXXX" class="input-tactical">
+                    </div>
+                    <div>
                         <label class="label-tactical">Course</label>
                         <input type="text" name="course" placeholder="B_TECH" class="input-tactical" required>
                     </div>
                     <div>
                         <label class="label-tactical">Temporal_Batch</label>
                         <input type="text" name="batch" placeholder="2024" class="input-tactical">
+                    </div>
+                    <div>
+                        <label class="label-tactical">Specialization</label>
+                        <input type="text" name="specialization" placeholder="CS" class="input-tactical">
                     </div>
                     <div class="col-span-2">
                         <label class="label-tactical">Access_Cipher</label>
@@ -411,18 +526,164 @@
         </div>
     </div>
 
+    <!-- BULK UPLOAD MODAL -->
+    <div id="bulk-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeBulkModal()"></div>
+        <div class="glass max-w-lg w-full p-0 relative border border-black/10 shadow-2xl bg-white overflow-hidden">
+            <div class="bg-black px-8 py-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="upload-cloud" class="w-4 h-4 text-red-500"></i>
+                    <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Bulk Upload Units</h2>
+                </div>
+                <button onclick="closeBulkModal()"><i data-lucide="x" class="w-4 h-4 text-gray-400"></i></button>
+            </div>
+            
+            <div class="p-10 space-y-6">
+                <div class="bg-red-500/5 border-l-4 border-red-500 p-4 text-[10px] font-bold text-gray-600 uppercase tracking-widest leading-relaxed">
+                    Upload a CSV file to deploy multiple units at once. Ensure your file matches the system architecture exactly.
+                </div>
+                
+                <a href="downloadTemplate" class="inline-flex items-center gap-2 text-red-500 hover:text-black font-bold uppercase tracking-widest text-[9px] transition-colors">
+                    <i data-lucide="download" class="w-3 h-3"></i> Download_Dummy_Structure.csv
+                </a>
+
+                <form action="teacherAction" method="post" enctype="multipart/form-data" class="space-y-6 mt-4">
+                    <input type="hidden" name="action" value="BULK_UPLOAD_STUDENTS">
+                    <input type="hidden" name="source" value="teacherDashboard.jsp">
+                    
+                    <div>
+                        <label class="label-tactical">Select Data File (.csv)</label>
+                        <input type="file" name="file" accept=".csv" class="w-full bg-black/[0.02] border border-black/5 p-4 text-[10px] font-bold uppercase tracking-widest outline-none focus:border-red-500 transition-all file:mr-4 file:py-2 file:px-4 file:border-0 file:text-[9px] file:font-bold file:uppercase file:tracking-widest file:bg-red-500 file:text-white hover:file:bg-black file:transition-colors cursor-pointer" required>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-red-500 text-white py-4 font-[Orbitron] text-[10px] tracking-[0.4em] uppercase hover:bg-black transition-all shadow-xl flex items-center justify-center gap-3">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Execute_Bulk_Injection
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT UNIT MODAL -->
+    <div id="edit-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeEditModal()"></div>
+        <div class="glass max-w-4xl w-full p-0 relative border border-black/10 shadow-2xl bg-white overflow-hidden">
+            <div class="bg-red-500 px-8 py-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="edit-3" class="w-4 h-4 text-white"></i>
+                    <h2 class="font-[Orbitron] text-[10px] tracking-widest uppercase font-black">Edit_Unit_Profile</h2>
+                </div>
+                <button onclick="closeEditModal()"><i data-lucide="x" class="w-4 h-4 text-white"></i></button>
+            </div>
+            
+            <div class="p-10">
+                <form action="teacherAction" method="post" class="grid grid-cols-2 gap-8">
+                    <input type="hidden" name="action" value="UPDATE_STUDENT">
+                    <input type="hidden" name="source" value="teacherDashboard.jsp">
+                    <input type="hidden" name="id" id="edit-student-id">
+                    
+                    <div class="col-span-2">
+                        <label class="label-tactical">Full_Name</label>
+                        <input type="text" name="full_name" id="edit-full-name" class="input-tactical" required>
+                    </div>
+                    <div>
+                        <label class="label-tactical">Auth_ID (User)</label>
+                        <input type="text" name="username" id="edit-username" class="input-tactical" required>
+                    </div>
+                    <div>
+                        <label class="label-tactical">Relay_Email</label>
+                        <input type="email" name="email" id="edit-email" class="input-tactical" required>
+                    </div>
+                    <div>
+                        <label class="label-tactical">Phone</label>
+                        <input type="text" name="phone" id="edit-phone" class="input-tactical">
+                    </div>
+                    <div>
+                        <label class="label-tactical">Course</label>
+                        <input type="text" name="course" id="edit-course" class="input-tactical" required>
+                    </div>
+                    <div>
+                        <label class="label-tactical">Temporal_Batch</label>
+                        <input type="text" name="batch" id="edit-batch" class="input-tactical">
+                    </div>
+                    <div>
+                        <label class="label-tactical">Specialization</label>
+                        <input type="text" name="specialization" id="edit-spec" class="input-tactical">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="label-tactical">Access_Cipher (Leave blank to keep same)</label>
+                        <input type="password" name="password" placeholder="••••••••" class="input-tactical">
+                    </div>
+                    
+                    <div class="col-span-2 pt-4">
+                        <button type="submit" class="w-full bg-black text-white py-4 font-[Orbitron] text-[10px] tracking-[0.4em] uppercase hover:bg-red-500 transition-all shadow-xl flex items-center justify-center gap-3">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i> Update_Registry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
+        let currentStream = 'ALL';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let allStudentRows = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            allStudentRows = Array.from(document.querySelectorAll('.student-row'));
+            applyFilters();
+        });
+
         function filterStudents(stream) {
-            const rows = document.querySelectorAll('.student-row');
+            currentStream = stream;
             const btns = document.querySelectorAll('.filter-btn');
             btns.forEach(b => b.classList.remove('active'));
             const id = 'filter-' + stream.replace(/\s+/g, '_');
             document.getElementById(id).classList.add('active');
-            rows.forEach(row => {
-                row.style.display = (stream === 'ALL' || row.dataset.stream === stream) ? 'table-row' : 'none';
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchInput = document.getElementById('search-student');
+            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            // Filter
+            const filteredRows = allStudentRows.filter(row => {
+                const matchesStream = (currentStream === 'ALL' || row.dataset.stream === currentStream);
+                // Name is in the 2nd td
+                const nameCell = row.querySelector('td:nth-child(2)').innerText.toLowerCase();
+                const matchesSearch = nameCell.includes(searchText);
+                return matchesStream && matchesSearch;
             });
+
+            // Pagination
+            const totalItems = filteredRows.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+            
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            // Hide all, then show only the paginated slice
+            allStudentRows.forEach(row => row.style.display = 'none');
+            filteredRows.slice(startIndex, endIndex).forEach(row => row.style.display = 'table-row');
+
+            // Update Info
+            const endDisplay = Math.min(endIndex, totalItems);
+            const infoText = totalItems === 0 ? 'Showing 0 of 0' : `Showing ${startIndex + 1}-${endDisplay} of ${totalItems}`;
+            document.getElementById('page-info').innerText = infoText;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            applyFilters();
         }
 
         function showDetails(btn) {
@@ -446,6 +707,23 @@
         function closeModal() { document.getElementById('detail-modal').classList.add('hidden'); }
         function openDeployModal() { document.getElementById('deploy-modal').classList.remove('hidden'); }
         function closeDeployModal() { document.getElementById('deploy-modal').classList.add('hidden'); }
+        function openBulkModal() { document.getElementById('bulk-modal').classList.remove('hidden'); }
+        function closeBulkModal() { document.getElementById('bulk-modal').classList.add('hidden'); }
+        
+        function openEditModal(btn) {
+            const s = btn.dataset;
+            document.getElementById('edit-student-id').value = s.id;
+            document.getElementById('edit-full-name').value = s.fullname;
+            document.getElementById('edit-username').value = s.username;
+            document.getElementById('edit-email').value = s.email;
+            document.getElementById('edit-phone').value = s.phone;
+            document.getElementById('edit-course').value = s.course;
+            document.getElementById('edit-batch').value = s.batch;
+            document.getElementById('edit-spec').value = s.spec;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+        
+        function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
         
         const sidebarModule = document.getElementById('sidebar-module');
         document.getElementById('mobile-toggle')?.addEventListener('click', () => sidebarModule.classList.remove('-translate-x-full'));

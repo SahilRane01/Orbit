@@ -42,26 +42,85 @@
         <div class="font-[Orbitron] text-red-500 tracking-widest px-2 py-0.5 bg-red-500/5 border border-red-500/20">UNIT_ID: <%= user.getId() %></div>
     </div>
 
-    <div class="flex flex-grow overflow-hidden relative z-10">
+    <div class="flex flex-grow overflow-hidden relative z-10"><%
+    UserProfile userObj = (UserProfile) session.getAttribute("user");
+    boolean isTeacher = "Teacher".equalsIgnoreCase(userObj.getRole());
+%>
         <!-- SIDEBAR -->
         <aside id="sidebar-module" class="fixed md:relative inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 flex flex-col h-full py-6 pr-4 transition-all duration-500 group/sidebar w-64 md:w-20 hover:md:w-64 bg-white/95 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none">
+            <div class="connector-line left-[39px] md:group-hover/sidebar:left-[47px] hidden md:block"></div>
             <div class="glass h-full border-r md:border border-black/10 flex flex-col py-10 overflow-hidden relative shadow-2xl bg-white/95">
-                <div class="w-full flex md:flex-col items-center md:items-start px-6 md:px-0 md:group-hover/sidebar:px-8 relative z-10 md:justify-center">
-                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20 cursor-pointer" onclick="location.href='dashboard.jsp'">GKL</div>
+                <div class="w-full flex md:flex-col items-center md:items-start transition-all duration-500 px-6 md:px-0 md:group-hover/sidebar:px-8 relative z-10 md:justify-center">
+                    <div class="w-12 h-12 bg-red-500 flex items-center justify-center font-[Orbitron] text-base font-bold text-white shadow-[0_0_30px_rgba(255,51,51,0.4)] shrink-0 border border-white/20 cursor-pointer" onclick="location.href='<%= isTeacher ? "teacherDashboard.jsp" : "dashboard.jsp" %>'">GKL</div>
                 </div>
-
                 <nav class="flex-grow flex flex-col gap-1 mt-8 relative z-10 items-center md:items-stretch overflow-y-auto scrollbar-hide">
-                    <a href="dashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-black/5 w-full">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Console</span>
-                    </a>
-                    <a href="userProfile.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
-                        <i data-lucide="user" class="w-5 h-5 text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Identity</span>
-                    </a>
+                    <% if (isTeacher) { %>
+                        <a href="teacherDashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="layout-dashboard" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Dashboard</span>
+                        </a>
+                        <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                        </a>
+                        <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Sessions</span>
+                        </a>
+                        <a href="markAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="clipboard-check" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Attendance</span>
+                        </a>
+                        <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Reports</span>
+                        </a>
+                        <a href="createEvent.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="calendar" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[06]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Events</span>
+                        </a>
+                        <a href="sendNotice.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="megaphone" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[07]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Notices</span>
+                        </a>
+                    <% } else { %>
+                        <a href="dashboard.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="home" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[01]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Dashboard</span>
+                        </a>
+                        <a href="classes.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="book-open" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[02]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Classes</span>
+                        </a>
+                        <a href="briefings.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="video" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[03]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Sessions</span>
+                        </a>
+                        <a href="viewAttendance.jsp" class="group/item flex items-center gap-4 p-4 hover:bg-red-500/5 w-full">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[04]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Attendance</span>
+                        </a>
+                        <a href="userProfile.jsp" class="group/item flex items-center gap-4 p-4 bg-red-500/[0.03] border-l-4 border-red-500 w-full">
+                            <i data-lucide="user" class="w-5 h-5 text-red-500"></i>
+                            <span class="terminal-index hidden md:group-hover/sidebar:block">[05]</span>
+                            <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase text-red-500">Profile</span>
+                        </a>
+                    <% } %>
                     <a href="logout" class="group/item flex items-center gap-4 p-4 hover:bg-black/5 mt-auto w-full">
                         <i data-lucide="log-out" class="w-5 h-5 text-gray-400 group-hover:text-red-500"></i>
-                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Deauth</span>
+                        <span class="terminal-index hidden md:group-hover/sidebar:block">[99]</span>
+                        <span class="hidden md:group-hover/sidebar:block font-[Orbitron] text-[10px] tracking-widest font-bold uppercase">Logout</span>
                     </a>
                 </nav>
             </div>
@@ -72,14 +131,14 @@
             
             <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 class="font-[Orbitron] text-4xl tracking-widest uppercase text-gray-900 leading-none">Vect<span class="text-red-500">_Identity</span></h1>
-                    <p class="text-[9px] text-gray-400 tracking-[0.4em] uppercase font-bold mt-4">Node_Status: <span class="text-red-500 underline">VERIFIED_ALPHA</span></p>
+                    <h1 class="font-[Orbitron] text-4xl tracking-widest uppercase text-gray-900 leading-none">User<span class="text-red-500"> Profile</span></h1>
+                    <p class="text-[9px] text-gray-400 tracking-[0.4em] uppercase font-bold mt-4">Status: <span class="text-red-500 underline">Verified</span></p>
                 </div>
                 
                 <% if("success".equals(status)) { %>
                 <div class="flex items-center gap-4 bg-green-500/5 border border-green-500/20 px-6 py-3 animate-pulse">
                     <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
-                    <span class="text-[10px] font-[Orbitron] text-green-500 font-bold tracking-widest uppercase">Identity_Override_Success</span>
+                    <span class="text-[10px] font-[Orbitron] text-green-500 font-bold tracking-widest uppercase">Profile Updated</span>
                 </div>
                 <% } %>
             </header>
@@ -93,11 +152,11 @@
                     </div>
                     <div class="space-y-6">
                         <div class="border-l-2 border-red-500/30 pl-4">
-                            <span class="label-tactical">Full_Name</span>
+                            <span class="label-tactical">Full Name</span>
                             <span class="text-[14px] font-bold uppercase tracking-wider text-gray-900 font-[Orbitron]"><%= user.getFullName() %></span>
                         </div>
                         <div class="border-l-2 border-black/5 pl-4">
-                            <span class="label-tactical">Role_Permission</span>
+                            <span class="label-tactical">Account Role</span>
                             <span class="text-[10px] text-red-500 font-bold tracking-[0.3em] font-[Orbitron]"><%= user.getRole() %></span>
                         </div>
                     </div>

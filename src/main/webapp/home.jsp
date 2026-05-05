@@ -10,7 +10,7 @@
 <head>
 
   <meta charset="UTF-8">
-  <title>Home - Gurukul</title>
+  <title>Home - Gurukul ILE</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -35,7 +35,7 @@
   <nav class="border-b border-gray-300 px-6 py-3 flex justify-between items-center">
 
     <h1 class="font-[Orbitron] tracking-widest text-lg">
-      GURUKUL
+      GURUKUL ILE
     </h1>
 
     <div class="text-sm">
